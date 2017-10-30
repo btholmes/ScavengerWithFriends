@@ -1,4 +1,4 @@
-package com.example.btholmes.scavenger11.Login;
+package com.example.btholmes.scavenger11.login;
 
 /**
  * Created by btholmes on 2/20/17.
@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.btholmes.scavenger11.Main.MainActivity;
+import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.R;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
 
                 Log.e("Debug", "success");
+                goMainScreen();
 //                handleFacebookAccessToken(loginResult.getAccessToken());
 
             }

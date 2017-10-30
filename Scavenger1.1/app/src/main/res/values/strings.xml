@@ -3,6 +3,22 @@
     <string name="facebook_app_id">1867109080268678</string>
     <string name="fb_login_protocol_scheme">fb1867109080268678</string>
 
+    <string name="about_text">This is a Scavenger Hunting Game
+        \n<a href="www.pexels.com">www.pexels.com</a>
+        \n<a href="www.pixabay.com">www.pixabay.com</a>
+    </string>
+
+    <string name="my_name">Ben Holmes</string>
+
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
+
+    <string name="tab_game">Games</string>
+    <string name="tab_friend">Friends</string>
+    <string name="tab_message">Messages</string>
+    <string name="tab_notif">Notifications</string>
+    <string name="tab_leaderBoard">LeaderBoard</string>
 
 
 </resources>
