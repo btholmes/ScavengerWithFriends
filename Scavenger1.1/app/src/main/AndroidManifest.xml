@@ -42,6 +42,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activities.ActivityChatDetails"></activity>s
+        <activity android:name=".activities.ActivityFriendDetails"
+            ></activity>
+
 
 
     </application>

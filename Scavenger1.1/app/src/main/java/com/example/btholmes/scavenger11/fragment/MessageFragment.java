@@ -14,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.activities.ActivityChatDetails;
 import com.example.btholmes.scavenger11.adapter.MessageListAdapter;
 import com.example.btholmes.scavenger11.data.Constant;
+import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.model.Message;
 
 
@@ -44,7 +46,7 @@ public class MessageFragment extends Fragment {
         mAdapter.setOnItemClickListener(new MessageListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, Message obj, int position) {
-//                ActivityChatDetails.navigate((ActivityMain)getActivity(), v.findViewById(R.id.lyt_parent), obj.getFriend(), obj.getSnippet());
+                ActivityChatDetails.navigate((MainActivity)getActivity(), v.findViewById(R.id.lyt_parent), obj.getFriend(), obj.getSnippet());
             }
         });
         return view;

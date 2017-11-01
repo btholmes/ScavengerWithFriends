@@ -16,8 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.activities.ActivityFriendDetails;
 import com.example.btholmes.scavenger11.adapter.FriendsListAdapter;
 import com.example.btholmes.scavenger11.data.Constant;
+import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.model.Friend;
 
 
@@ -47,7 +49,7 @@ public class FriendFragment extends Fragment {
         mAdapter.setOnItemClickListener(new FriendsListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, Friend obj, int position) {
-//                ActivityFriendDetails.navigate((ActivityMain) getActivity(), v, obj);
+                ActivityFriendDetails.navigate((MainActivity) getActivity(), v, obj);
             }
         });
         return view;

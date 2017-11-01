@@ -7,8 +7,11 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
-import com.example.btholmes.scavenger11.login.LoginActivity;
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.login.LoginActivity;
+import com.example.btholmes.scavenger11.main.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,20 +31,20 @@ public class ActivitySplash extends AppCompatActivity {
                 startActivity(new Intent(ActivitySplash.this, LoginActivity.class));
                 finish();
 
-//                FirebaseUser user  = FirebaseAuth.getInstance().getCurrentUser();
-//                if (user == null) {
-//                    startActivity(new Intent(ActivitySplash.this, LoginActivity.class));
-//                    finish();
-////            finish();
-//                }else{
-//                    Intent i = new Intent(ActivitySplash.this, ActivityMain.class);
-//
-////                Intent i = new Intent(ActivitySplash.this, MainActivity.class);
-//                    startActivity(i);
-//                    // kill current activity
-//                    finish();
-//
-//                }
+                FirebaseUser user  = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null) {
+                    startActivity(new Intent(ActivitySplash.this, LoginActivity.class));
+                    finish();
+//            finish();
+                }else{
+                    Intent i = new Intent(ActivitySplash.this, MainActivity.class);
+
+//                Intent i = new Intent(ActivitySplash.this, MainActivity.class);
+                    startActivity(i);
+                    // kill current activity
+                    finish();
+
+                }
 
             }
         };

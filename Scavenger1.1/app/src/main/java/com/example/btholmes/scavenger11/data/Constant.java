@@ -9,6 +9,7 @@ import com.example.btholmes.scavenger11.R;
 import com.example.btholmes.scavenger11.model.Friend;
 import com.example.btholmes.scavenger11.model.Game;
 import com.example.btholmes.scavenger11.model.Message;
+import com.example.btholmes.scavenger11.model.MessageDetails;
 import com.example.btholmes.scavenger11.model.Notif;
 
 import java.text.SimpleDateFormat;
@@ -130,17 +131,17 @@ public class Constant {
         }
         return items;
     }
-//    public static List<MessageDetails> getMessageDetailsData(Context ctx, Friend friend)  {
-//        List<MessageDetails> items = new ArrayList<>();
-//        String s_date[] = ctx.getResources().getStringArray(R.array.message_details_date);
-//        String s_content[] = ctx.getResources().getStringArray(R.array.message_details_content);
-//
-//        items.add(new MessageDetails(0, s_date[0], friend, s_content[0], false));
-//        items.add(new MessageDetails(1, s_date[1], friend, s_content[1], true));
-//        items.add(new MessageDetails(2, s_date[2], friend, s_content[2], false));
-//
-//        return items;
-//    }
+    public static List<MessageDetails> getMessageDetailsData(Context ctx, Friend friend)  {
+        List<MessageDetails> items = new ArrayList<>();
+        String s_date[] = ctx.getResources().getStringArray(R.array.message_details_date);
+        String s_content[] = ctx.getResources().getStringArray(R.array.message_details_content);
+
+        items.add(new MessageDetails(0, s_date[0], friend, s_content[0], false));
+        items.add(new MessageDetails(1, s_date[1], friend, s_content[1], true));
+        items.add(new MessageDetails(2, s_date[2], friend, s_content[2], false));
+
+        return items;
+    }
 //
     public static List<Notif> getNotifData(Context ctx)  {
         List<Notif> items = new ArrayList<>();
