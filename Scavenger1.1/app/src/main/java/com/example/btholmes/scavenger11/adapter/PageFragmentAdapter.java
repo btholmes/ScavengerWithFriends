@@ -20,11 +20,11 @@ public class PageFragmentAdapter extends FragmentPagerAdapter {
         mFragmentTitles.add(title);
     }
 
+
     @Override
     public Fragment getItem(int position) {
         return mFragments.get(position);
     }
-
 
     @Override
     public int getCount() {

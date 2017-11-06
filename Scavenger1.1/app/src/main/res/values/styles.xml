@@ -33,11 +33,11 @@
         <item name="textAllCaps">true</item>
     </style>
 
-    <style name="friendDetailsTheme">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBarOverlay">true</item>
-    </style>
+    <!--<style name="friendDetailsTheme">-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+        <!--<item name="windowActionBarOverlay">true</item>-->
+    <!--</style>-->
 
 
     <style name="RippleStyleWhite">

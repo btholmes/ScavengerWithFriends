@@ -13,9 +13,6 @@ import com.example.btholmes.scavenger11.main.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class ActivitySplash extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +20,6 @@ public class ActivitySplash extends AppCompatActivity {
 //        FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_splash);
         bindLogo();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
                 // go to the main activity
 
                 startActivity(new Intent(ActivitySplash.this, LoginActivity.class));
@@ -46,10 +40,6 @@ public class ActivitySplash extends AppCompatActivity {
 
                 }
 
-            }
-        };
-        // Show splash screen for 3 seconds
-        new Timer().schedule(task, 2000);
 
         // for system bar in lollipop
 //        Tools.systemBarLolipop(this);

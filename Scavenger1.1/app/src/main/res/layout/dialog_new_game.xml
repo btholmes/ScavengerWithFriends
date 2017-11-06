@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
+    android:layout_height="350dp"
+    android:background="@color/colorPrimary"
+    android:padding="@dimen/spacing_large"
+    android:orientation="vertical"
+    >
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/lyt_parent"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--&gt;-->
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center|bottom"
+
+            >
+
+            <ImageView
+                app:srcCompat="@drawable/cat"
+                android:id="@+id/new_game_image"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_margin="10dp"
+                />
+
+            <Button
+                android:id="@+id/btn_challenge_random"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_margin="10dp"
+                android:text="Random Person"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/btn_challenge_friend"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@android:color/white"
+                android:minHeight="?attr/actionBarSize"
+                android:text= "Challenge Friend"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/colorPrimary" />
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+
+    <!--</RelativeLayout>-->
+</LinearLayout>

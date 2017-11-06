@@ -4,9 +4,9 @@
     tools:context=".ActivityMain">
 
     <item
-        android:id="@+id/action_new_feed"
-        android:orderInCategory="100"
-        android:title="New Feed"
-        android:icon="@drawable/ic_menu_create_feed"
+        android:id="@+id/action_new_game"
+        android:orderInCategory="0"
+        android:title="New Game"
+        android:icon="@drawable/ic_add"
         app:showAsAction="always" />
 </menu>

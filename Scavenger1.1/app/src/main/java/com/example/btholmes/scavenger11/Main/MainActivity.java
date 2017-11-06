@@ -1,10 +1,13 @@
 package com.example.btholmes.scavenger11.main;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -22,16 +25,46 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.activities.ActivityEditInfo;
 import com.example.btholmes.scavenger11.adapter.PageFragmentAdapter;
+import com.example.btholmes.scavenger11.data.Tools;
 import com.example.btholmes.scavenger11.fragment.FriendFragment;
 import com.example.btholmes.scavenger11.fragment.GameFragment;
 import com.example.btholmes.scavenger11.fragment.LeaderBoardFragment;
 import com.example.btholmes.scavenger11.fragment.MessageFragment;
 import com.example.btholmes.scavenger11.fragment.NotificationFragment;
+import com.example.btholmes.scavenger11.login.LoginActivity;
+import com.example.btholmes.scavenger11.pushNotifications.NotificationListener;
+import com.example.btholmes.scavenger11.widget.CircleTransform;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
+
+    private SharedPreferences vpPref;
+    private int viewPagerPage;
+
+    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authListener;
+    private FirebaseUser user;
+    private DatabaseReference mFirebaseDatabaseReference;
+    private String imageURL;
+
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout drawerLayout;
@@ -68,6 +101,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         parent_view = findViewById(android.R.id.content);
 
+        user  = FirebaseAuth.getInstance().getCurrentUser();
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+//        checkUserNull();
+
+        // for system bar in lollipop
+        Tools.systemBarLolipop(this);
+    }
+
+    public void initComponents(){
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         actionbar = getSupportActionBar();
@@ -78,19 +122,223 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        setupTabIcons();
-        setupTabClick();
+    }
 
-        // for system bar in lollipop
-//        Tools.systemBarLolipop(this);
+    private void setAvatar() {
+        if(avatar != null){
+            final Query ref = mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl");
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String url = dataSnapshot.getValue().toString();
+                    Picasso.with(getApplicationContext()).load(url).resize(100, 100).transform(new CircleTransform()).into(avatar);
+
+                    avatar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+//                            selectImage();
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+    }
+
+    private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
+    private String userChoosenTask;
+
+
+    private void updateDisplayName(String newDisplay){
+
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(newDisplay)
+//                .setPhotoUri(Uri.parse(profilePicURL))
+                .build();
+
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "Name Changed", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+        mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("displayName").setValue(newDisplay);
+//        setupDrawerLayout();
+//        setAvatar();
+    }
+
+    private void updateEmail(String newEmail){
+
+
+//        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+////                .setDisplayName(newDisplay)
+////                .setPhotoUri(Uri.parse(profilePicURL))
+//                .
+//                .build();
+
+//        user.updateProfile(profileUpdates)
+//                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        if (task.isSuccessful()) {
+//                            Toast.makeText(MainActivity.this, "Name Changed", Toast.LENGTH_SHORT).show();
+//
+//                        }
+//                    }
+//                });
+//        mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("displayName").setValue(newDisplay);
+//        setupDrawerLayout();
+//        setAvatar();
+    }
+
+
+    /**
+     * This function calls Firebase for the DisplayName from userList
+     */
+//    private void getDisplayName() {
+//
+//        user = FirebaseAuth.getInstance().getCurrentUser();
+//        displayName.setText(user.getDisplayName());
+//        if(user != null){
+//            final Query ref = mFirebaseDatabaseReference.child("userList").child(user.getUid());
+//            ref.addChildEventListener(new ChildEventListener() {
+//                @Override
+//                public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+//                    //  dataSnapshot.getValue(User.class);
+//                    if(dataSnapshot.getKey().equals("displayName")){
+//                        String userDisplayName = dataSnapshot.getValue(String.class);
+//                        if(userDisplayName != null){
+//                            displayName.setText(userDisplayName);
+//
+//                        }else{
+//                            displayName.setText("Please set Display Name");
+//                        }
+//
+//                    }
+//
+//                }
+//
+//                @Override
+//                public void onChildRemoved(DataSnapshot dataSnapshot) {}
+//
+//                @Override
+//                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+//
+//                @Override
+//                public void onCancelled(DatabaseError error) {}
+//
+//                @Override
+//                public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
+//            });
+//
+//        }
+//
+//    }
+
+
+
+    public void checkUserNull(){
+        if (user == null) {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+//            finish();
+        }else{
+            addUserToDB(user);
+            addPhotoUrl(user);
+
+            String tkn = FirebaseInstanceId.getInstance().getToken();
+
+            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("userToken").setValue(tkn);
+
+
+            auth = FirebaseAuth.getInstance();
+
+            authListener = new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    if (user == null) {
+
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        finish();
+                    }
+                }
+            };
+            auth.addAuthStateListener(authListener);
+
+            final Query ref = mFirebaseDatabaseReference.child("userList").child(user.getUid());
+            ref.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                    if(dataSnapshot.getKey().equals("pushNotifications")){
+                        startService(new Intent(MainActivity.this, NotificationListener.class));
+//        startService(new Intent(this, photoChangeService.class));
+                    }
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        setContentView(R.layout.activity_main);
+        initComponents();
         setupDrawerLayout();
+
+        setupTabIcons();
+        setupTabClick();
+        setAvatar();
+//        getDisplayName();
+
+
         prepareActionBar(toolbar);
         changeDefaultIcon();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        vpPref = getPreferences(MODE_PRIVATE);
+//        viewPagerPage = vpPref.getInt("viewPagerPage",0);
+//        viewPager.setCurrentItem(viewPagerPage);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        getPreferences(MODE_PRIVATE).edit().putInt("viewPagerPage", viewPager.getCurrentItem()).commit();
     }
 
     private void prepareActionBar(Toolbar toolbar) {
@@ -153,8 +401,17 @@ public class MainActivity extends AppCompatActivity {
         View header = view.getHeaderView(0);
 
         avatar = (ImageView) header.findViewById(R.id.avatar);
-        userEmail = (TextView) header.findViewById(R.id.userEmail);
+
+//        if(user.isEmailVerified()){
+            userEmail = (TextView) header.findViewById(R.id.userEmail);
+            userEmail.setText(user.getEmail());
+//        }else{
+//            Toast.makeText(this, "Please Verify Your Email", Toast.LENGTH_SHORT).show();
+//        }
+
+
         displayName = (TextView) header.findViewById(R.id.displayName);
+        displayName.setText(user.getDisplayName());
 
         view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -163,9 +420,10 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.closeDrawers();
 
                 if(menuItem.getTitle().equals("Change Display Name")){
-//                    Intent i = new Intent(ActivityMain.this, ActivityEditInfo.class);
-//                    i.putExtra("view", "Display");
-//                    startActivity(i);
+                    Intent i = new Intent(MainActivity.this, ActivityEditInfo.class);
+                    i.putExtra("view", "Display");
+                    startActivity(i);
+                    finish();
                 }else if(menuItem.getTitle().equals("Change Email")){
 //                    Intent i = new Intent(ActivityMain.this, ActivityEditInfo.class);
 //                    i.putExtra("view", "Email");
@@ -292,6 +550,25 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void addPhotoUrl(FirebaseUser user){
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        String url = null;
+        if(user.getPhotoUrl() != null){
+            url = user.getPhotoUrl().toString();
+        }
+        if(url != null){
+            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(url);
+        }else{
+            String defaultPic = "http://vvcexpl.com/wordpress/wp-content/uploads/2013/09/profile-default-male.png";
+            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(defaultPic);
+        }
+    }
+
+    private void addUserToDB(FirebaseUser userToAdd){
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child("userList").child(userToAdd.getUid()).child("uid").setValue(userToAdd.getUid());
+    }
+
     private long exitTime = 0;
 
     public void doExitApp() {
@@ -299,8 +576,9 @@ public class MainActivity extends AppCompatActivity {
 //            Toast.makeText(this, R.string.press_again_exit_app, Toast.LENGTH_SHORT).show();
 //            exitTime = System.currentTimeMillis();
 //        } else {
-//            finish();
+            finish();
 //        }
+
     }
 
     @Override

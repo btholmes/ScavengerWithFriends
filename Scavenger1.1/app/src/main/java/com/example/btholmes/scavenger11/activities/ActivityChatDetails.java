@@ -162,6 +162,12 @@ public class ActivityChatDetails extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+//        finish();
+    }
+
     /**
      * Handle click on action bar
      **/

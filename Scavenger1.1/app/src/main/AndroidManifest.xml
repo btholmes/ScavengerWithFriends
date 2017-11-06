@@ -42,10 +42,16 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activities.ActivityEditInfo"></activity>
+
         <activity android:name=".activities.ActivityChatDetails"></activity>s
         <activity android:name=".activities.ActivityFriendDetails"
             ></activity>
 
+        <activity android:name=".activities.ActivityChooseFriend"></activity>
+
+
+        <service android:name=".pushNotifications.NotificationListener"/>
 
 
     </application>
