@@ -1,8 +1,7 @@
 package com.example.btholmes.scavenger11.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -10,18 +9,16 @@ import io.realm.annotations.Required;
  * Created by btholmes on 11/4/17.
  */
 
+
 /**
- * This is user class used to retrieve data from Firebase. All info is parsed and stored in Realm as user-specific
+ * This is the User class for in app storage
  */
-public class User {
+public class RealmUser extends RealmObject{
 
 
     private String userToken = null;
-    private List<Game> games = new ArrayList<>();
-    private List<Message> messages = new ArrayList<>();
     private String displayName = null;
     private String photoUrl = "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1378871_10151890982237420_1347727989_n.jpg?oh=f8522e0ea7aee1411b67ee45988d5456&oe=5A6FA4C9";
-    private Boolean hasGames = false;
 
     @Required
     private String email = null;
@@ -31,24 +28,24 @@ public class User {
     private String uid = null;
 
 
-    public User() {
+    public RealmUser() {
 
     }
 
-    public static User create(String uid, String email){
-        User user = new User();
+    public static RealmUser create(String uid, String email){
+        RealmUser user = new RealmUser();
         user.uid = uid;
         user.email = email;
         return user;
     }
 
-    public User(String uid, String email){
+    public RealmUser(String uid, String email){
         this.uid = uid;
         this.email = email;
         this.displayName = email;
     }
 
-    public User(String uid, String email, String displayName) {
+    public RealmUser(String uid, String email, String displayName) {
         this.uid = uid;
         this.email = email;
         this.displayName = displayName;
@@ -70,7 +67,7 @@ public class User {
         this.uid = uid;
     }
 
-    public void setEmail(String email){
+    public   void setEmail(String email){
         this.email = email;
     }
 

@@ -17,11 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.activities.ActivitySignUp;
 import com.example.btholmes.scavenger11.main.MainActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -58,12 +60,16 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        initComponent();
+
         configureFacebook();
+        initComponent();
 
     }
 
     private void configureFacebook(){
+        //Does this work?
+        LoginManager.getInstance().logOut();
+
         callbackManager = CallbackManager.Factory.create();
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
@@ -73,9 +79,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-                Log.e("Debug", "success");
-                goMainScreen();
+
                 handleFacebookAccessToken(loginResult.getAccessToken());
+                Log.e("Debug", "success");
+//                goMainScreen();
 
             }
 
@@ -102,11 +109,9 @@ public class LoginActivity extends AppCompatActivity {
         btnSignup = (Button) findViewById(R.id.btn_signup);
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnReset = (Button) findViewById(R.id.btn_reset_password);
-//
-//        configureGoogle();
-        configureFacebook();
-//
-//
+
+
+        //SO user doesn't have to log in everytime
         firebaseAuthListner = new FirebaseAuth.AuthStateListener(){
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -121,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+                startActivity(new Intent(LoginActivity.this, ActivitySignUp.class));
             }
         });
 
@@ -155,22 +160,15 @@ public class LoginActivity extends AppCompatActivity {
                         .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                // If sign in fails, display a message to the user. If sign in succeeds
-                                // the auth state listener will be notified and logic to handle the
-                                // signed in user can be handled in the listener.
                                 progressBar.setVisibility(View.GONE);
                                 if (!task.isSuccessful()) {
-                                    // there was an error
                                     if (password.length() < 6) {
                                         inputPassword.setError(getString(R.string.minimum_password));
                                     } else {
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
-                                    System.out.println("Successful login");
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    goMainScreen();
                                 }
                             }
                         });
@@ -185,6 +183,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(!task.isSuccessful()){
                     Toast.makeText(getApplicationContext(), "Error with Firebase", Toast.LENGTH_LONG).show();
+                }else{
+                    goMainScreen();
                 }
             }
         });

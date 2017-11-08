@@ -19,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/food_dessert" />
+                />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -57,18 +57,19 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="20px"
-                        android:layout_height="20px"
-                        android:src="@drawable/ic_people"
-                        android:tint="@android:color/white" />
+                    <!--<ImageView-->
+                        <!--android:id=""-->
+                        <!--android:layout_width="20px"-->
+                        <!--android:layout_height="20px"-->
+                        <!--android:src="@drawable/ic_people"-->
+                        <!--android:tint="@android:color/white" />-->
 
                     <TextView
-                        android:id="@+id/recipes"
+                        android:id="@+id/wordsLeft"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/spacing_small"
-                        android:text="132 Likes"
+                        android:text="Words Left"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                         android:textColor="@android:color/white" />
                 </LinearLayout>

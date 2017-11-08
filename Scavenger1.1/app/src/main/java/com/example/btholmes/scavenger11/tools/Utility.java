@@ -14,16 +14,10 @@ import android.support.v7.app.AlertDialog;
 import com.example.btholmes.scavenger11.model.Game;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Utility {
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -41,26 +35,30 @@ public class Utility {
     }
 
 
+    /**
+     * This will return null if user has no games list in Firebase
+     * @param callback
+     */
     public static void populateGames(final gameCallback callback) {
 
-
-        final Query ref = mFirebaseDatabaseReference.child("userList").child(currentUser.getUid()).child("games");
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                GenericTypeIndicator<HashMap<String, Game>> t = new GenericTypeIndicator<HashMap<String, Game>>() {
-                    @Override
-                    public int hashCode() {
-                        return super.hashCode();
-                    }
-                };
-                gameList = new ArrayList<>(dataSnapshot.getValue(t).values());
-                callback.onSuccess(gameList);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
+//
+//        final Query ref = mFirebaseDatabaseReference.child("userList").child(currentUser.getUid()).child("games");
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                GenericTypeIndicator<HashMap<String, Game>> t = new GenericTypeIndicator<HashMap<String, Game>>() {
+//                    @Override
+//                    public int hashCode() {
+//                        return super.hashCode();
+//                    }
+//                };
+//                gameList = new ArrayList<>(dataSnapshot.getValue(t).values());
+//                callback.onSuccess(gameList);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {}
+//        });
 
     }
 

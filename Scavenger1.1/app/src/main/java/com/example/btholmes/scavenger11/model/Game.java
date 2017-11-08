@@ -4,25 +4,49 @@ package com.example.btholmes.scavenger11.model;
  * Created by btholmes on 3/26/17.
  */
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-public class Game implements Serializable{
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
+
+import static android.R.attr.id;
+
+public class Game {
 
     private String lastPictureTaken;
+    @Required
+    @PrimaryKey
     private String gameID;
+    @Required
     private String challenger;
+    @Required
     private String opponent;
-    private String opponentDisplayName;
+    @Required
+    private String words;
+//    private List<String> words = new ArrayList<>();
+    @Required
+    private String opponentWordsLeft;
+//    private List<String> opponentWordsLeft = new ArrayList<>();
+    @Required
+    private String challengerWordsLeft;
+//   private List<String> challengerWordsLeft = new ArrayList<>();
+
+
     private String challengerDisplayName;
+    private String opponentDisplayName;
     private String winner;
-    private List<String> words = new ArrayList<>();
+
     private boolean stillInPlay;
     private boolean opponentHasAccepted;
+    private long opponentTimeElapsed;
+    private long challengerTimeElapsed;
+    private String date;
+    private Friend friend;
+    private String text = null;
+    private int photo = -1;
 
 
     public Game() {
@@ -33,7 +57,7 @@ public class Game implements Serializable{
         Random random = new Random();
         String gameID = System.currentTimeMillis() +""+ random.nextInt(100000);
 
-        this.words = words;
+        this.words = words.toString();
         this.gameID = gameID;
         date =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         this.challenger = challenger;
@@ -68,13 +92,13 @@ public class Game implements Serializable{
         this.challengerDisplayName = challengerDisplayName;
     }
 
-    public List<String> getWords() {
-        return words;
-    }
-
-    public void setWords(ArrayList<String> words) {
-        this.words = words;
-    }
+//    public List<String> getWords() {
+//        return words;
+//    }
+//
+//    public void setWords(ArrayList<String> words) {
+//        this.words = words;
+//    }
 
     public boolean isOpponentHasAccepted() {return opponentHasAccepted; }
 
@@ -139,58 +163,53 @@ public class Game implements Serializable{
         this.lastPictureTaken = lastPictureTaken;
     }
 
+//    public List<String> getOpponentWordsLeft() {
+//        return opponentWordsLeft;
+//    }
+//
+//    public void setOpponentWordsLeft(List<String> opponentWordsLeft) {
+//        this.opponentWordsLeft = opponentWordsLeft;
+//    }
+//
+//    public List<String> getChallengerWordsLeft() {
+//        return challengerWordsLeft;
+//    }
+//
+//    public void setChallengerWordsLeft(List<String> challengerWordsLeft) {
+//        this.challengerWordsLeft = challengerWordsLeft;
+//    }
 
-
-
-
-    private long id;
-    private String date;
-    private Friend friend;
-    private String text = null;
-    private int photo = -1;
-
-
-    public Game(long id, String date, Friend friend, String text, int photo) {
-        this.id = id;
-        this.date = date;
-        this.friend = friend;
-        this.text = text;
-        this.photo = photo;
+    public long getOpponentTimeElapsed() {
+        return opponentTimeElapsed;
     }
-    public Game(long id, String date, Friend friend, String text) {
-        this.id = id;
-        this.date = date;
-        this.friend = friend;
-        this.text = text;
+
+    public void setOpponentTimeElapsed(long opponentTimeElapsed) {
+        this.opponentTimeElapsed = opponentTimeElapsed;
     }
-    public Game(long id, String date, Friend friend, int photo) {
-        this.id = id;
-        this.date = date;
-        this.friend = friend;
-        this.photo = photo;
+
+    public long getChallengerTimeElapsed() {
+        return challengerTimeElapsed;
     }
+
+    public void setChallengerTimeElapsed(long challengerTimeElapsed) {
+        this.challengerTimeElapsed = challengerTimeElapsed;
+    }
+
+
 
     public long getId() {
         return id;
     }
 
 
-    public Friend getFriend() {
-        return friend;
-    }
 
     public String getText() {
         return text;
     }
 
-    public int getPhoto() {
-        return photo;
+    public Friend getFriend() {
+        return friend;
     }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
 
     public void setFriend(Friend friend) {
         this.friend = friend;
@@ -200,7 +219,9 @@ public class Game implements Serializable{
         this.text = text;
     }
 
-    public void setPhoto(int photo) {
+
+    public void setPhoto(int photo){
         this.photo = photo;
     }
+
 }

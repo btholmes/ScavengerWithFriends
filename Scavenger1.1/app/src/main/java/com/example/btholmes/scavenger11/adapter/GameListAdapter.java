@@ -1,6 +1,7 @@
 package com.example.btholmes.scavenger11.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,29 +46,19 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public ImageView image;
+        public ImageView icon;
+
         public TextView name;
-//        public TextView text_name;
-//        public ImageView bt_more;
-//        public ImageView photo_content;
-//        public ImageView bt_like;
-//        public ImageView bt_comment;
-//        public ImageView bt_share;
-//        public TextView text_content;
-//        public TextView text_date;
+        public TextView wordsLeft;
 
         public ViewHolder(View v) {
             super(v);
-//            photo = (ImageView) v.findViewById(R.id.photo);
-//            text_name = (TextView) v.findViewById(R.id.text_name);
-//            bt_more = (ImageView) v.findViewById(R.id.bt_more);
-//            photo_content = (ImageView) v.findViewById(R.id.photo_content);
-//            bt_like = (ImageView) v.findViewById(R.id.bt_like);
-//            bt_comment = (ImageView) v.findViewById(R.id.bt_comment);
-//            bt_share = (ImageView) v.findViewById(R.id.bt_share);
-//            text_content = (TextView) v.findViewById(R.id.text_content);
-//            text_date = (TextView) v.findViewById(R.id.text_date);
             image = (ImageView) v.findViewById(R.id.image);
+            icon = (ImageView) v.findViewById(R.id.icon);
+
             name = (TextView) v.findViewById(R.id.name);
+            wordsLeft = (TextView) v.findViewById(R.id.wordsLeft);
+
         }
 
     }
@@ -92,6 +83,10 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Game p = items.get(position);
         if(p!=null){
+
+            holder.name.setText(p.getGameID());
+            holder.image.setBackgroundColor(ContextCompat.getColor(ctx, R.color.ten));
+
 
 //            Picasso.with(ctx).load(p.getFriend().getPhoto()).resize(80, 80).transform(new CircleTransform()).into(holder.image);
 //            holder.name.setText(p.getFriend().getName());

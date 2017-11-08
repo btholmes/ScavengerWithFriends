@@ -2,8 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
-        android:id="@+id/action_sample"
+        android:id="@+id/view_profile"
         android:orderInCategory="100"
         app:showAsAction="never"
-        android:title="Sample Action"/>
+        android:title="View Profile" />
+    <item
+        android:id="@+id/block_user"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="Block User" />
+    <item
+        android:id="@+id/delete_conversation"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="Delete Conversation" />
 </menu>

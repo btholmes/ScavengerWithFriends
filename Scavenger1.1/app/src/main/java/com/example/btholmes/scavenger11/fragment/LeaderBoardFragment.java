@@ -13,11 +13,41 @@ import com.example.btholmes.scavenger11.R;
 
 public class LeaderBoardFragment extends Fragment {
     View view;
+    private Boolean ON_PAUSE;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //THIS FORCES THE MESSAGE FRAGMENT TO BE RELOADED
+//        if(ON_PAUSE){
+//            ON_PAUSE = false;
+//            getFragmentManager()
+//                    .beginTransaction()
+//                    .remove(this)
+//                    .attach(this)
+//                    .commit();
+//        }
+
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ON_PAUSE = false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ON_PAUSE = true;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.page_fragment_leader_board, container, false);
+        ON_PAUSE = false;
         return view;
     }
 

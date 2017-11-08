@@ -7,6 +7,7 @@
 
 
     <application
+        android:name=".application.ScavengerApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,6 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".activities.ActivitySettings"></activity>
+        <activity android:name=".activities.ActivitySignUp"></activity>
 
         <activity android:name=".login.LoginActivity"></activity>
         <activity android:name=".main.MainActivity"></activity>
@@ -41,6 +45,11 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
+        <!--FOR ANDROID PAY-->
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
 
         <activity android:name=".activities.ActivityEditInfo"></activity>
 

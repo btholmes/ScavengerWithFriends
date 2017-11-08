@@ -1,12 +1,14 @@
 package com.example.btholmes.scavenger11.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,20 +17,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.btholmes.scavenger11.R;
-import com.example.btholmes.scavenger11.activities.ActivityFriendDetails;
 import com.example.btholmes.scavenger11.adapter.FriendsListAdapter;
 import com.example.btholmes.scavenger11.data.Constant;
-import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.model.Friend;
+import com.example.btholmes.scavenger11.widget.DividerItemDecoration;
+import com.google.android.gms.common.api.BooleanResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wallet.Wallet;
 
 
-public class FriendFragment extends Fragment {
+public class StoreFragment extends Fragment  {
 
     private RecyclerView recyclerView;
     private FriendsListAdapter mAdapter;
     private View view;
     private SearchView search;
     private Boolean ON_PAUSE;
+    private LinearLayoutManager mLayoutManager;
+    private DividerItemDecoration mDividerItemDecoration;
 
 
     @Override
@@ -67,16 +73,23 @@ public class FriendFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.page_fragment_friend, container, false);
+        view = inflater.inflate(R.layout.page_fragment_store, container, false);
 
         ON_PAUSE = false;
         // activate fragment menu
         setHasOptionsMenu(true);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        mDividerItemDecoration = new DividerItemDecoration(
+                recyclerView.getContext(),
+                mLayoutManager.getOrientation()
+        );
+        recyclerView.addItemDecoration(mDividerItemDecoration);
 
         //set data and list adapter
         mAdapter = new FriendsListAdapter(getActivity(), Constant.getFriendsData(getActivity()));
@@ -84,33 +97,58 @@ public class FriendFragment extends Fragment {
         mAdapter.setOnItemClickListener(new FriendsListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, Friend obj, int position) {
-                ActivityFriendDetails.navigate((MainActivity) getActivity(), v, obj);
+//                ActivityFriendDetails.navigate((MainActivity) getActivity(), v, obj);
+                payForItem();
             }
         });
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_fragment_friend, menu);
-        search = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        search.setIconified(false);
-        search.setQueryHint("Search Friend...");
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
 
+    public void payForItem(){
+        Wallet.Payments.isReadyToPay(Constant.getGoogleApiClient(getContext())).setResultCallback(
+                new ResultCallback<BooleanResult>() {
             @Override
-            public boolean onQueryTextChange(String s) {
-                try {
-                    mAdapter.getFilter().filter(s);
-                } catch (Exception e) {}
-                return true;
+            public void onResult(@NonNull BooleanResult booleanResult) {
+//                hideProgressDialog();
+                if (booleanResult.getStatus().isSuccess()) {
+                    if (booleanResult.getValue()) {
+                        // Show Android Pay buttons alongside regular checkout button
+                        // ...
+                    } else {
+                        // Hide Android Pay buttons, show a message that Android Pay
+                        // cannot be used yet, and display a traditional checkout button
+                        // ...
+                    }
+                } else {
+                    // Error making isReadyToPay call
+                    Log.e("Pay", "isReadyToPay:" + booleanResult.getStatus());
+                }
             }
         });
-        search.onActionViewCollapsed();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_fragment_store, menu);
+//        search = (SearchView) menu.findItem(R.id.action_search).getActionView();
+//        search.setIconified(false);
+//        search.setQueryHint("Search Friend...");
+//        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String s) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String s) {
+//                try {
+//                    mAdapter.getFilter().filter(s);
+//                } catch (Exception e) {}
+//                return true;
+//            }
+//        });
+//        search.onActionViewCollapsed();
         super.onCreateOptionsMenu(menu, inflater);
     }
 

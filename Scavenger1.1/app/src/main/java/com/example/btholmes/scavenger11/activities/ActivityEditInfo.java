@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.data.Tools;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,6 +52,7 @@ public class ActivityEditInfo extends AppCompatActivity {
 
         populateView(display);
 
+        Tools.systemBarLolipop(this);
 
     }
 

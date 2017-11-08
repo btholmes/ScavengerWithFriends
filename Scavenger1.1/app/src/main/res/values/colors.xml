@@ -24,6 +24,19 @@
     <color name="bg_screen4">#50A50A</color>
 
 
+    <color name="zero">#8955D1</color>
+    <color name="one">#FDA52A</color>
+    <color name="two">#07B2DD</color>
+    <color name="three">#50A50A</color>
+    <color name="four">#FDA52A</color>
+    <color name="five">#40FFFFFF</color>
+    <color name="six">#ff6861</color>
+    <color name="seven">#FFF</color>
+    <color name="eight">#000</color>
+    <color name="nine">#ef2afd</color>
+    <color name="ten">#00ff73</color>
+
+
     <color name="colorPrimaryLight">#FFE0B2</color>
 
     <color name="colorAccentDark">#2F8B99</color>

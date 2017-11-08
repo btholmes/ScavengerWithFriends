@@ -8,6 +8,7 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.data.Tools;
 import com.example.btholmes.scavenger11.login.LoginActivity;
 import com.example.btholmes.scavenger11.main.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,14 +18,9 @@ public class ActivitySplash extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_splash);
         bindLogo();
                 // go to the main activity
-
-                startActivity(new Intent(ActivitySplash.this, LoginActivity.class));
-                finish();
-
                 FirebaseUser user  = FirebaseAuth.getInstance().getCurrentUser();
                 if (user == null) {
                     startActivity(new Intent(ActivitySplash.this, LoginActivity.class));
@@ -32,8 +28,6 @@ public class ActivitySplash extends AppCompatActivity {
 //            finish();
                 }else{
                     Intent i = new Intent(ActivitySplash.this, MainActivity.class);
-
-//                Intent i = new Intent(ActivitySplash.this, MainActivity.class);
                     startActivity(i);
                     // kill current activity
                     finish();
@@ -42,7 +36,7 @@ public class ActivitySplash extends AppCompatActivity {
 
 
         // for system bar in lollipop
-//        Tools.systemBarLolipop(this);
+        Tools.systemBarLolipop(this);
     }
 
     private void bindLogo(){

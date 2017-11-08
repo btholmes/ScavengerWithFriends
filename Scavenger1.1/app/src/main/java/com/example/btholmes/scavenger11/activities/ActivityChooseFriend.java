@@ -1,9 +1,9 @@
 package com.example.btholmes.scavenger11.activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +21,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.btholmes.scavenger11.R;
 import com.example.btholmes.scavenger11.adapter.FriendsListAdapter;
 import com.example.btholmes.scavenger11.data.Constant;
+import com.example.btholmes.scavenger11.data.Tools;
 import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.model.Friend;
 import com.example.btholmes.scavenger11.model.Game;
@@ -62,35 +63,45 @@ public class ActivityChooseFriend extends AppCompatActivity{
     private RecyclerView recyclerView;
     private FriendsListAdapter friendsListAdapter;
     private Toolbar toolbarSearch;
+    private String title;
 
     public static List<String> list = new ArrayList<>();
 
 
-    public static void navigate(AppCompatActivity activity, View transitionImage) {
+    public static void navigate(AppCompatActivity activity, View transitionImage, String title) {
         Intent intent = new Intent(activity, ActivityChooseFriend.class);
-//        intent.putExtra(EXTRA_OBJCT, obj);
+        intent.putExtra("title", title);
 //        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage, EXTRA_OBJCT);
+
+        //This goes straight to start??
         ActivityCompat.startActivity(activity, intent, null);
     }
 
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_friend);
+
+        title = getIntent().getExtras().getString("title");
+
 
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+        //        setContentView(R.layout.activity_choose_friend);
         setToolbar();
         initComponents();
-
+        Tools.systemBarLolipop(this);
 
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+
+        return super.onCreateView(name, context, attrs);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,9 +131,9 @@ public class ActivityChooseFriend extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.action_new_friend:
-                Toast.makeText(ActivityChooseFriend.this, "Add New Friend Clicked", Toast.LENGTH_SHORT).show();
-                return true;
+//            case R.id.action_new_friend:
+//                Toast.makeText(ActivityChooseFriend.this, "Add New Friend Clicked", Toast.LENGTH_SHORT).show();
+//                return true;
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -134,8 +145,8 @@ public class ActivityChooseFriend extends AppCompatActivity{
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
 //        Intent intent = new Intent(ActivityChooseFriend.this, MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        startActivity(intent);
 //        finish();
     }
@@ -144,7 +155,7 @@ public class ActivityChooseFriend extends AppCompatActivity{
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         actionbar = getSupportActionBar();
-        actionbar.setTitle("Challenge Friend");
+        actionbar.setTitle(title);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowHomeEnabled(true);
 
@@ -167,12 +178,23 @@ public class ActivityChooseFriend extends AppCompatActivity{
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//
+//
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//    }
+//
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//    }
 
     private void dialogChallengeFriend(final Friend f) {
         final Dialog dialog = new Dialog(this);
@@ -218,6 +240,7 @@ public class ActivityChooseFriend extends AppCompatActivity{
 
                 Intent intent = new Intent(ActivityChooseFriend.this, MainActivity.class);
                 intent.putExtra(ActivityChatDetails.KEY_FRIEND, friend);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
 
             }

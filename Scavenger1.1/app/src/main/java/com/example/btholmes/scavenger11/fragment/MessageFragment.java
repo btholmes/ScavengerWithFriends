@@ -27,15 +27,31 @@ public class MessageFragment extends Fragment {
     private MessageListAdapter mAdapter;
     private View view;
     private SearchView search;
+    private ViewGroup container;
+    private LayoutInflater inflater;
+    private Boolean ON_DETACH;
+    private Boolean ON_PAUSE;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.page_fragment_message, container, false);
-
+        ON_PAUSE = false;
+        this.container = container;
+        this.inflater = inflater;
         // activate fragment menu
         setHasOptionsMenu(true);
+        initComponents();
+        return view;
+    }
 
+    public void initComponents(){
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
@@ -46,11 +62,50 @@ public class MessageFragment extends Fragment {
         mAdapter.setOnItemClickListener(new MessageListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, Message obj, int position) {
-                ActivityChatDetails.navigate((MainActivity)getActivity(), v.findViewById(R.id.lyt_parent), obj.getFriend(), obj.getSnippet());
+//                getFragmentManager()
+//                .beginTransaction()
+//                        .attach(new MessageFragment())
+//                        .commit();
+
+                ActivityChatDetails.navigate((MainActivity)getActivity(), v.findViewById(R.id.lyt_parent), obj.getFriend(), obj.getSnippet(), true);
             }
         });
-        return view;
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //        if(item.getName().equals(MessageFragment.class.getSimpleName())){
+//            Log.e("wow", "wow");
+//        }
+        //THIS FORCES THE MESSAGE FRAGMENT TO BE RELOADED
+//        if(ON_PAUSE){
+//            ON_PAUSE = false;
+//            getFragmentManager()
+//                    .beginTransaction()
+//                    .remove(this)
+//                    .attach(this)
+//                    .commit();
+//////            ON_DETACH = false;
+//        }
+
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ON_PAUSE = false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ON_PAUSE = true;
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -79,12 +134,12 @@ public class MessageFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_new_message:
-//                Intent i = new Intent(getActivity(), ActivitySelectFriend.class);
-//                startActivity(i);
-                return true;
-        }
+//        switch (item.getItemId()){
+//            case R.id.action_new_message:
+////                Intent i = new Intent(getActivity(), ActivitySelectFriend.class);
+////                startActivity(i);
+//                return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 

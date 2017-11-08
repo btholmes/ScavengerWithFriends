@@ -3,6 +3,9 @@ package com.example.btholmes.scavenger11.data;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.btholmes.scavenger11.R;
@@ -11,6 +14,10 @@ import com.example.btholmes.scavenger11.model.Game;
 import com.example.btholmes.scavenger11.model.Message;
 import com.example.btholmes.scavenger11.model.MessageDetails;
 import com.example.btholmes.scavenger11.model.Notif;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,12 +26,51 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-@SuppressWarnings("ResourceType")
+
 public class Constant {
+
+    public static final int WALLET_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST;
+    static public final String ANALYTICS_KEY = "analytics shared prefs key";
+
+    public static final String MERCHANT_NAME = "Awesome Bike Store";
+    public static final String CURRENCY_CODE_USD = "USD";
+    static public final String DEFAULT_SHARED_PREF = "default shared preferences";
+
+    private static GoogleApiClient googleApiClient;
+
 
 
     public static Resources getStrRes(Context context) {
         return context.getResources();
+    }
+
+    public static GoogleApiClient getGoogleApiClient(Context context){
+        if(googleApiClient == null){
+            googleApiClient = new GoogleApiClient.Builder(context)
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(@Nullable Bundle bundle) {
+
+                        }
+
+                        @Override
+                        public void onConnectionSuspended(int i) {
+
+                        }
+                    })
+
+                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                        }
+                    })
+                    .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
+                            .setEnvironment(Constant.WALLET_ENVIRONMENT)
+                            .build())
+                    .build();
+        }
+        return googleApiClient;
     }
 
     public static String formatTime(long time) {

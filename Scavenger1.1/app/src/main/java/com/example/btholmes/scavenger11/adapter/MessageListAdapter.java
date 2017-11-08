@@ -94,7 +94,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 .transform(new CircleTransform())
                 .into(holder.image);
 
-        setAnimation(holder.itemView, position);
+//        setAnimation(holder.itemView, position);
 
         // view detail
         holder.lyt_parent.setOnClickListener(new View.OnClickListener() {

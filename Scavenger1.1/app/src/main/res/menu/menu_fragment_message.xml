@@ -11,11 +11,11 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/action_new_message"
-        android:orderInCategory="100"
-        android:title="New Message"
-        android:icon="@drawable/ic_menu_new_message"
-        app:showAsAction="always" />
+    <!--<item-->
+        <!--android:id="@+id/action_new_message"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="New Message"-->
+        <!--android:icon="@drawable/ic_menu_new_message"-->
+        <!--app:showAsAction="always" />-->
 
 </menu>

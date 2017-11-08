@@ -10,10 +10,10 @@
         android:icon="@drawable/ic_menu_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/action_new_friend"
-        android:orderInCategory="100"
-        android:title="New Friend"
-        android:icon="@drawable/ic_menu_new_friend"
-        app:showAsAction="always" />
+    <!--<item-->
+        <!--android:id="@+id/action_new_friend"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="New Friend"-->
+        <!--android:icon="@drawable/ic_menu_new_friend"-->
+        <!--app:showAsAction="always" />-->
 </menu>

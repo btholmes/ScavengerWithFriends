@@ -55,11 +55,16 @@ public class ActivityFriendDetails extends AppCompatActivity {
         ivImage.setImageResource(friend.getPhoto());
 
 
+//        Tools.systemBarLolipop(this);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+//        Intent intent = new Intent(ActivityFriendDetails.this, MainActivity.class);
+//        intent.putExtra(ActivityChatDetails.KEY_FRIEND, friend);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        startActivity(intent);
     }
 
     @Override

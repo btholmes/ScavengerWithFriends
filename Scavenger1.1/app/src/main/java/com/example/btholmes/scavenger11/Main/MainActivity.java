@@ -1,5 +1,6 @@
 package com.example.btholmes.scavenger11.main;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -17,17 +18,20 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.activities.ActivityChooseFriend;
 import com.example.btholmes.scavenger11.activities.ActivityEditInfo;
 import com.example.btholmes.scavenger11.adapter.PageFragmentAdapter;
 import com.example.btholmes.scavenger11.data.Tools;
@@ -36,9 +40,11 @@ import com.example.btholmes.scavenger11.fragment.GameFragment;
 import com.example.btholmes.scavenger11.fragment.LeaderBoardFragment;
 import com.example.btholmes.scavenger11.fragment.MessageFragment;
 import com.example.btholmes.scavenger11.fragment.NotificationFragment;
+import com.example.btholmes.scavenger11.fragment.StoreFragment;
 import com.example.btholmes.scavenger11.login.LoginActivity;
 import com.example.btholmes.scavenger11.pushNotifications.NotificationListener;
 import com.example.btholmes.scavenger11.widget.CircleTransform;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,6 +59,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
+
+import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -84,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     private GameFragment f_game;
     private FriendFragment f_friend;
+    private StoreFragment f_store;
     private MessageFragment f_message;
     private NotificationFragment f_notif;
     private LeaderBoardFragment f_leaderBoard;
@@ -95,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.tab_profile
     };
 
+
+    Realm realm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +117,20 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
 
-//        checkUserNull();
+        checkUserNull();
+
+        initComponents();
+        initAction();
+        setupDrawerLayout();
+
+        setupTabIcons();
+        setupTabClick();
+        setAvatar();
+//        getDisplayName();
+
+
+        prepareActionBar(toolbar);
+        changeDefaultIcon();
 
         // for system bar in lollipop
         Tools.systemBarLolipop(this);
@@ -113,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void initComponents(){
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         setSupportActionBar(toolbar);
         actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(false);
@@ -122,6 +148,63 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    private void dialogNewGame() {
+        final Dialog dialog = new Dialog(MainActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.dialog_new_game);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+//        ImageView image = (ImageView)dialog.findViewById(R.id.image);
+        //        Picasso.with(getActivity()).load(friend.getPhoto())
+//                .resize(200, 200)
+//                .transform(new CircleTransform())
+//                .into(image);
+
+        Button challengeFriend = ((Button)dialog.findViewById(R.id.btn_challenge_friend));
+        Button challengeRandom = ((Button)dialog.findViewById(R.id.btn_challenge_random));
+
+
+        challengeFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.hide();
+
+                ActivityChooseFriend.navigate(MainActivity.this, view, "Challenge Friend");
+
+//                Intent intent = new Intent(getActivity(), ActivityChooseFriend.class);
+//////                intent.putExtra(ActivityChatDetails.KEY_FRIEND, friend);
+//                startActivity(intent);
+//                Toast.makeText(getActivity(), "Challenge Friend Clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.show();
+        dialog.getWindow().setAttributes(lp);
+    }
+
+
+    private void initAction(){
+        fab.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                int position = viewPager.getCurrentItem();
+                switch (position) {
+                    case 0 :
+//                        view.playSoundEffect(SoundEffectConstants.CLICK);
+                        dialogNewGame();
+                        break;
+                    case 1 :
+                        ActivityChooseFriend.navigate(MainActivity.this, view, "Find Friend");
+                        break;
+                }
+            }
+        });
     }
 
     private void setAvatar() {
@@ -250,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
     public void checkUserNull(){
         if (user == null) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
-//            finish();
+            finish();
         }else{
             addUserToDB(user);
             addPhotoUrl(user);
@@ -313,32 +396,42 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        setContentView(R.layout.activity_main);
-        initComponents();
-        setupDrawerLayout();
 
-        setupTabIcons();
-        setupTabClick();
-        setAvatar();
-//        getDisplayName();
-
-
-        prepareActionBar(toolbar);
-        changeDefaultIcon();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        vpPref = getPreferences(MODE_PRIVATE);
-//        viewPagerPage = vpPref.getInt("viewPagerPage",0);
-//        viewPager.setCurrentItem(viewPagerPage);
+        vpPref = getPreferences(MODE_PRIVATE);
+        viewPagerPage = vpPref.getInt("viewPagerPage", 0);
+//        switch (viewPagerPage) {
+//            case (0):
+//                getFragmentManager().beginTransaction().remove().commit();
+//                break;
+//            case (1) :
+//                break;
+//            case (2) :
+//                break;
+//            case (3) :
+//                break;
+//            case (4) :
+//                break;
+//        }
+        viewPager.setCurrentItem(viewPagerPage);
+//        viewPager.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        getPreferences(MODE_PRIVATE).edit().putInt("viewPagerPage", viewPager.getCurrentItem()).commit();
+        int index = viewPager.getCurrentItem();
+//        viewPager.getAdapter().no
+        getPreferences(MODE_PRIVATE).edit().putInt("viewPagerPage", index).commit();
     }
 
     private void prepareActionBar(Toolbar toolbar) {
@@ -457,7 +550,76 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 
                 }else if(menuItem.getTitle().equals("Sign Out")){
-//                    auth = FirebaseAuth.getInstance();
+                    signOut();
+                }
+
+//                Snackbar.make(parent_view, menuItem.getTitle()+" Clicked ", Snackbar.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new PageFragmentAdapter(getSupportFragmentManager());
+        if (f_game == null) { f_game = new GameFragment(); }
+//        if (f_friend == null) { f_friend = new FriendFragment(); }
+        if (f_store == null) { f_store = new StoreFragment(); }
+        if (f_message == null) { f_message = new MessageFragment(); }
+        if (f_notif == null) { f_notif = new NotificationFragment(); }
+        if (f_leaderBoard == null) { f_leaderBoard = new LeaderBoardFragment(); }
+        adapter.addFragment(f_game, getString(R.string.tab_game));
+        adapter.addFragment(f_message, getString(R.string.tab_message));
+//        adapter.addFragment(f_friend, getString(R.string.tab_friend));
+        adapter.addFragment(f_store, "Store");
+        adapter.addFragment(f_notif, getString(R.string.tab_notif));
+        adapter.addFragment(f_leaderBoard, getString(R.string.tab_leaderBoard));
+        viewPager.setAdapter(adapter);
+//        viewPager.setOffscreenPageLimit(5);
+    }
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(imageResId[0]);
+        tabLayout.getTabAt(1).setIcon(imageResId[2]);
+        tabLayout.getTabAt(2).setIcon(imageResId[1]);
+        tabLayout.getTabAt(3).setIcon(imageResId[3]);
+        tabLayout.getTabAt(4).setIcon(imageResId[4]);
+    }
+
+    private void setupTabClick() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                viewPager.setCurrentItem(position);
+                actionbar.setTitle(adapter.getTitle(position));
+                switch(position){
+                    case 0 :
+                        fab.setVisibility(View.VISIBLE);
+                        break;
+                    case 1 :
+                        fab.setVisibility(View.VISIBLE);
+                        break;
+                    case 2 :
+                        fab.setVisibility(View.GONE);
+                        break;
+                    case 3 :
+                        fab.setVisibility(View.GONE);
+                        break;
+                    case 4 :
+                        fab.setVisibility(View.GONE);
+                        break;
+                }
+
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) { }
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
+        });
+    }
+
+    public void signOut(){
+
+        //                    auth = FirebaseAuth.getInstance();
 //                    if(LoginManager.getInstance() != null){
 //                        LoginManager.getInstance().logOut();
 //                        auth.signOut();
@@ -470,73 +632,25 @@ public class MainActivity extends AppCompatActivity {
 ////                        startActivity(i);
 ////                        finish();
 //                    }
-                }
 
-//                Snackbar.make(parent_view, menuItem.getTitle()+" Clicked ", Snackbar.LENGTH_SHORT).show();
-                return true;
-            }
-        });
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-        adapter = new PageFragmentAdapter(getSupportFragmentManager());
-        if (f_game == null) { f_game = new GameFragment(); }
-        if (f_friend == null) { f_friend = new FriendFragment(); }
-        if (f_message == null) { f_message = new MessageFragment(); }
-        if (f_notif == null) { f_notif = new NotificationFragment(); }
-        if (f_leaderBoard == null) { f_leaderBoard = new LeaderBoardFragment(); }
-        adapter.addFragment(f_game, getString(R.string.tab_game));
-        adapter.addFragment(f_friend, getString(R.string.tab_friend));
-        adapter.addFragment(f_message, getString(R.string.tab_message));
-        adapter.addFragment(f_notif, getString(R.string.tab_notif));
-        adapter.addFragment(f_leaderBoard, getString(R.string.tab_leaderBoard));
-        viewPager.setAdapter(adapter);
-    }
-    private void setupTabIcons() {
-        tabLayout.getTabAt(0).setIcon(imageResId[0]);
-        tabLayout.getTabAt(1).setIcon(imageResId[1]);
-        tabLayout.getTabAt(2).setIcon(imageResId[2]);
-        tabLayout.getTabAt(3).setIcon(imageResId[3]);
-        tabLayout.getTabAt(4).setIcon(imageResId[4]);
-    }
-
-    private void setupTabClick() {
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                int position = tab.getPosition();
-                viewPager.setCurrentItem(position);
-                actionbar.setTitle(adapter.getTitle(position));
-            }
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
-        });
+        FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_about: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("About");
-                builder.setMessage(getString(R.string.about_text));
-                builder.setNeutralButton("OK", null);
-                builder.show();
-                return true;
-            }
-            case R.id.action_login: {
-//                Intent i = new Intent(getApplicationContext(), ActivityLogin.class);
-//                startActivity(i);
-                return true;
-            }
             case R.id.action_settings: {
                 Snackbar.make(parent_view, "Setting Clicked", Snackbar.LENGTH_SHORT).show();
                 return true;
             }
-            case R.id.action_regist: {
+            case R.id.action_sign_out: {
+                  if(user != null){
+                      signOut();
+                  }else{
+                      Toast.makeText(MainActivity.this, "ERROR : Somehow someone is signed in, and user == null", Toast.LENGTH_SHORT).show();
+                  }
 //                Intent i = new Intent(getApplicationContext(), ActivityRegistration.class);
 //                startActivity(i);
                 return true;

@@ -80,7 +80,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         final Friend c = filtered_items.get(position);
         holder.name.setText(c.getName());
         Picasso.with(ctx).load(c.getPhoto()).resize(100, 100).transform(new CircleTransform()).into(holder.image);
-        setAnimation(holder.itemView, position);
+//        setAnimation(holder.itemView, position);
         holder.lyt_parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

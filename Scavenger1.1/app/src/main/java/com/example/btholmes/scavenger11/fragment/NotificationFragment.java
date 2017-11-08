@@ -23,12 +23,47 @@ public class NotificationFragment extends Fragment {
     private RecyclerView recyclerView;
     private View view;
     private NotifListAdapter mAdapter;
+    private Boolean ON_PAUSE;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //        if(item.getName().equals(MessageFragment.class.getSimpleName())){
+//            Log.e("wow", "wow");
+//        }
+        //THIS FORCES THE MESSAGE FRAGMENT TO BE RELOADED
+//        if(ON_PAUSE){
+//            ON_PAUSE = false;
+//            getFragmentManager()
+//                    .beginTransaction()
+//                    .remove(this)
+//                    .attach(this)
+//                    .commit();
+//////            ON_DETACH = false;
+//        }
+
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ON_PAUSE = false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ON_PAUSE = true;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.page_fragment_notif, container, false);
 
+        ON_PAUSE = false;
         // activate fragment menu
         setHasOptionsMenu(true);
 

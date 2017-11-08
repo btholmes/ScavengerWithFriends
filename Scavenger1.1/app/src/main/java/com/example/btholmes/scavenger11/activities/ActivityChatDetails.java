@@ -33,14 +33,17 @@ import java.util.List;
 
 public class ActivityChatDetails extends AppCompatActivity {
 
-    public static String KEY_FRIEND     = "com.app.sample.social.FRIEND";
-    public static String KEY_SNIPPET   = "com.app.sample.social.SNIPPET";
+    public static String KEY_FRIEND     = "FRIEND";
+    public static String KEY_SNIPPET   = "SNIPPET";
+    public static String KEY_FROM_MESSAGE_FRAGMENT = "FROM_MESSAGE_FRAGMENT";
+    public static boolean FROM_MESSAGE_FRAGMENT;
 
     // give preparation animation activity transition
-    public static void navigate(AppCompatActivity activity, View transitionImage, Friend obj, String snippet) {
+    public static void navigate(AppCompatActivity activity, View transitionImage, Friend obj, String snippet, boolean fromMessageFragment) {
         Intent intent = new Intent(activity, ActivityChatDetails.class);
         intent.putExtra(KEY_FRIEND, obj);
         intent.putExtra(KEY_SNIPPET, snippet);
+        intent.putExtra(KEY_FROM_MESSAGE_FRAGMENT, fromMessageFragment);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage, KEY_FRIEND);
         ActivityCompat.startActivity(activity, intent, options.toBundle());
     }
@@ -68,6 +71,7 @@ public class ActivityChatDetails extends AppCompatActivity {
         Intent intent = getIntent();
         friend = (Friend) intent.getExtras().getSerializable(KEY_FRIEND);
         String snippets = intent.getStringExtra(KEY_SNIPPET);
+        FROM_MESSAGE_FRAGMENT = intent.getBooleanExtra(KEY_FROM_MESSAGE_FRAGMENT, false);
         initToolbar();
 
         iniComponen();
@@ -165,6 +169,11 @@ public class ActivityChatDetails extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+//        if(FROM_MESSAGE_FRAGMENT){
+//            Intent intent = new Intent(ActivityChatDetails.this, MainActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            startActivity(intent);
+//        }
 //        finish();
     }
 
@@ -179,7 +188,13 @@ public class ActivityChatDetails extends AppCompatActivity {
                 onBackPressed();
                 return true;
 
-            case R.id.action_sample:
+            case R.id.view_profile :
+                Snackbar.make(parent_view, item.getTitle() + " Clicked ", Snackbar.LENGTH_SHORT).show();
+                return true;
+            case R.id.block_user:
+                Snackbar.make(parent_view, item.getTitle() + " Clicked ", Snackbar.LENGTH_SHORT).show();
+                return true;
+            case R.id.delete_conversation:
                 Snackbar.make(parent_view, item.getTitle() + " Clicked ", Snackbar.LENGTH_SHORT).show();
                 return true;
             default:
