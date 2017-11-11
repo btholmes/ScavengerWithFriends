@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.example.btholmes.scavenger11.R;
 import com.example.btholmes.scavenger11.activities.ActivitySignUp;
 import com.example.btholmes.scavenger11.main.MainActivity;
+import com.example.btholmes.scavenger11.model.User;
+import com.example.btholmes.scavenger11.tools.Utility;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,6 +35,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 
@@ -41,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference mFirebaseDatabaseRef;
     private FirebaseAuth.AuthStateListener firebaseAuthListner;
 
 
@@ -55,16 +63,37 @@ public class LoginActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
+        //SO user doesn't have to log in everytime
+        firebaseAuthListner = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                currentUser = user;
+                if(user != null){
+                    checkNewUser();
+//                    goMainScreen();
+                }
+            }
+        };
+
         configureFacebook();
         initComponent();
 
     }
+
+//
+
+
 
     private void configureFacebook(){
         //Does this work?
@@ -101,8 +130,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initComponent(){
 
-        firebaseAuth = FirebaseAuth.getInstance();
-
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -111,16 +138,7 @@ public class LoginActivity extends AppCompatActivity {
         btnReset = (Button) findViewById(R.id.btn_reset_password);
 
 
-        //SO user doesn't have to log in everytime
-        firebaseAuthListner = new FirebaseAuth.AuthStateListener(){
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null){
-                    goMainScreen();
-                }
-            }
-        };
+
 
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
@@ -156,24 +174,27 @@ public class LoginActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
 
 //                authenticate user
-                firebaseAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
-                                if (!task.isSuccessful()) {
-                                    if (password.length() < 6) {
-                                        inputPassword.setError(getString(R.string.minimum_password));
-                                    } else {
-                                        Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-                                    }
-                                } else {
-                                    goMainScreen();
-                                }
-                            }
-                        });
+                signInUser(email, password);
+
             }
         });
+    }
+
+    private void signInUser(String email, final String password){
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressBar.setVisibility(View.GONE);
+                        if (!task.isSuccessful()) {
+                            if (password.length() < 6) {
+                                inputPassword.setError(getString(R.string.minimum_password));
+                            } else {
+                                Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+                });
     }
 
     private void handleFacebookAccessToken(AccessToken accessToken) {
@@ -184,10 +205,43 @@ public class LoginActivity extends AppCompatActivity {
                 if(!task.isSuccessful()){
                     Toast.makeText(getApplicationContext(), "Error with Firebase", Toast.LENGTH_LONG).show();
                 }else{
-                    goMainScreen();
+//                    addToDB();
+
                 }
             }
         });
+    }
+
+    private void checkNewUser(){
+        mFirebaseDatabaseRef.child("userList").child(currentUser.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    // use "username" already exists
+                    goMainScreen();
+                } else {
+                    // "username" does not exist yet.
+                    addToDB();
+                    Utility.getInstance(LoginActivity.this).addPhotoUrl(currentUser);
+                    goMainScreen();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /**
+     * Handles adding someone who clicked Log In with Facebook, this gets called after the Auth listener has already registerd a change
+     * in the user.
+     */
+    private void addToDB(){
+        User newUser = new User(currentUser.getUid(), currentUser.getEmail(), currentUser.getDisplayName());
+        mFirebaseDatabaseRef.child("userList").child(currentUser.getUid()).setValue(newUser);
     }
 
     @Override

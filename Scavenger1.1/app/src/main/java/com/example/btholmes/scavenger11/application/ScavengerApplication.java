@@ -2,6 +2,8 @@ package com.example.btholmes.scavenger11.application;
 
 import android.app.Application;
 
+import com.google.android.gms.ads.MobileAds;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -19,6 +21,9 @@ public class ScavengerApplication extends Application {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(realmConfig);
+
+
+        MobileAds.initialize(this, "ca-app-pub-2023686607552716~7618780666");
 
         super.onCreate();
     }

@@ -18,6 +18,7 @@ import com.example.btholmes.scavenger11.R;
 import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.model.RealmUser;
 import com.example.btholmes.scavenger11.model.User;
+import com.example.btholmes.scavenger11.tools.Utility;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -174,7 +175,8 @@ public class ActivitySignUp extends AppCompatActivity {
                                         Toast.makeText(ActivitySignUp.this, "Profile Created", Toast.LENGTH_SHORT).show();
                                         User user = new User(FirebaseAuth.getInstance().getCurrentUser().getUid(), email);
                                         addUserToDB(user);
-                                        goMainScreen();
+                                        Utility.getInstance(ActivitySignUp.this).addPhotoUrl(FirebaseAuth.getInstance().getCurrentUser());
+//                                        goMainScreen();
                                     }
                                 }
                             });
@@ -186,6 +188,7 @@ public class ActivitySignUp extends AppCompatActivity {
             }
         });
     }
+
 
     private void setPasswordTextListener(){
 

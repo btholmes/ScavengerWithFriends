@@ -32,6 +32,8 @@ import com.example.btholmes.scavenger11.model.Game;
 import com.example.btholmes.scavenger11.model.Player;
 import com.example.btholmes.scavenger11.model.PushNotification;
 import com.example.btholmes.scavenger11.widget.CircleTransform;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -68,7 +70,10 @@ public class ActivityChooseFriend extends AppCompatActivity{
     public static List<String> list = new ArrayList<>();
 
 
+
+
     public static void navigate(AppCompatActivity activity, View transitionImage, String title) {
+
         Intent intent = new Intent(activity, ActivityChooseFriend.class);
         intent.putExtra("title", title);
 //        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage, EXTRA_OBJCT);
@@ -83,6 +88,12 @@ public class ActivityChooseFriend extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_friend);
 
+
+//        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+//        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+        setUpAdBanner();
+
         title = getIntent().getExtras().getString("title");
 
 
@@ -94,6 +105,12 @@ public class ActivityChooseFriend extends AppCompatActivity{
         initComponents();
         Tools.systemBarLolipop(this);
 
+    }
+
+    private void setUpAdBanner(){
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override

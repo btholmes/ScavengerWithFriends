@@ -25,6 +25,12 @@ public class Utility {
     public static FirebaseUser currentUser;
     public static ArrayList<Game> gameList;
     public static Context ctx;
+    public static Utility utility;
+
+
+    public static Utility getInstance(Context context){
+        return utility == null ? new Utility(context) : utility;
+    }
 
 
     public Utility (Context context){
@@ -62,6 +68,19 @@ public class Utility {
 
     }
 
+
+    public static void addPhotoUrl(FirebaseUser user){
+        String url = null;
+        if(user.getPhotoUrl() != null){
+            url = user.getPhotoUrl().toString();
+        }
+        if(url != null){
+            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(url);
+        }else{
+            String defaultPic = "http://vvcexpl.com/wordpress/wp-content/uploads/2013/09/profile-default-male.png";
+            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(defaultPic);
+        }
+    }
 
 
 

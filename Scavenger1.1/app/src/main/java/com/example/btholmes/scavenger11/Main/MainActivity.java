@@ -43,10 +43,12 @@ import com.example.btholmes.scavenger11.fragment.NotificationFragment;
 import com.example.btholmes.scavenger11.fragment.StoreFragment;
 import com.example.btholmes.scavenger11.login.LoginActivity;
 import com.example.btholmes.scavenger11.pushNotifications.NotificationListener;
+import com.example.btholmes.scavenger11.tools.Utility;
 import com.example.btholmes.scavenger11.widget.CircleTransform;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -64,11 +66,13 @@ import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity {
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     private SharedPreferences vpPref;
     private int viewPagerPage;
 
     private FirebaseAuth auth;
-    private FirebaseAuth.AuthStateListener authListener;
+    private FirebaseAuth.AuthStateListener firebaseAuthListner;
     private FirebaseUser user;
     private DatabaseReference mFirebaseDatabaseReference;
     private String imageURL;
@@ -105,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    Utility utility = Utility.getInstance(this);
     Realm realm;
 
     @Override
@@ -113,8 +118,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         parent_view = findViewById(android.R.id.content);
 
+        // Obtain the FirebaseAnalytics instance.
+//        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         user  = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+        auth = FirebaseAuth.getInstance();
+        //SO user doesn't have to log in everytime
+        firebaseAuthListner = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user == null){
+                    goToLogin();
+                }
+            }
+        };
+//        auth.addAuthStateListener(firebaseAuthListner);
 
 
         checkUserNull();
@@ -174,6 +195,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 dialog.hide();
+
+                /**
+                 * Reporting to Firebase Analytics
+                 */
+//                Bundle bundle = new Bundle();
+//                bundle.putString(FirebaseAnalytics.Param.CHARACTER, user.getDisplayName());
+//                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Challenged A Friend");
 
                 ActivityChooseFriend.navigate(MainActivity.this, view, "Challenge Friend");
 
@@ -329,34 +357,45 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 
+    public void goToLogin(){
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    public void addTokenToDB(){
+        String tkn = FirebaseInstanceId.getInstance().getToken();
+
+        mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("userToken").setValue(tkn);
+    }
 
     public void checkUserNull(){
         if (user == null) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }else{
-            addUserToDB(user);
-            addPhotoUrl(user);
-
-            String tkn = FirebaseInstanceId.getInstance().getToken();
-
-            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("userToken").setValue(tkn);
+//            addUserToDB(user);
+//            addPhotoUrl(user);
 
 
-            auth = FirebaseAuth.getInstance();
 
-            authListener = new FirebaseAuth.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-                    if (user == null) {
 
-                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        finish();
-                    }
-                }
-            };
-            auth.addAuthStateListener(authListener);
+
+//            authListener = new FirebaseAuth.AuthStateListener() {
+//                @Override
+//                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                    FirebaseUser user = firebaseAuth.getCurrentUser();
+//                    if (user == null) {
+//
+//                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                }
+//            };
+//            auth.addAuthStateListener(authListener);
 
             final Query ref = mFirebaseDatabaseReference.child("userList").child(user.getUid());
             ref.addChildEventListener(new ChildEventListener() {
@@ -404,20 +443,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         vpPref = getPreferences(MODE_PRIVATE);
         viewPagerPage = vpPref.getInt("viewPagerPage", 0);
-//        switch (viewPagerPage) {
-//            case (0):
-//                getFragmentManager().beginTransaction().remove().commit();
-//                break;
-//            case (1) :
-//                break;
-//            case (2) :
-//                break;
-//            case (3) :
-//                break;
-//            case (4) :
-//                break;
-//        }
+
         viewPager.setCurrentItem(viewPagerPage);
+        auth.addAuthStateListener(firebaseAuthListner);
 //        viewPager.getAdapter().notifyDataSetChanged();
     }
 
@@ -664,24 +692,24 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void addPhotoUrl(FirebaseUser user){
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        String url = null;
-        if(user.getPhotoUrl() != null){
-            url = user.getPhotoUrl().toString();
-        }
-        if(url != null){
-            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(url);
-        }else{
-            String defaultPic = "http://vvcexpl.com/wordpress/wp-content/uploads/2013/09/profile-default-male.png";
-            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(defaultPic);
-        }
-    }
+//    private void addPhotoUrl(FirebaseUser user){
+//        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+//        String url = null;
+//        if(user.getPhotoUrl() != null){
+//            url = user.getPhotoUrl().toString();
+//        }
+//        if(url != null){
+//            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(url);
+//        }else{
+//            String defaultPic = "http://vvcexpl.com/wordpress/wp-content/uploads/2013/09/profile-default-male.png";
+//            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(defaultPic);
+//        }
+//    }
 
-    private void addUserToDB(FirebaseUser userToAdd){
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.child("userList").child(userToAdd.getUid()).child("uid").setValue(userToAdd.getUid());
-    }
+//    private void addUserToDB(FirebaseUser userToAdd){
+//        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+//        mFirebaseDatabaseReference.child("userList").child(userToAdd.getUid()).child("uid").setValue(userToAdd.getUid());
+//    }
 
     private long exitTime = 0;
 

@@ -18,10 +18,11 @@ public class User {
 
     private String userToken = null;
     private List<Game> games = new ArrayList<>();
+    private List<PushNotification> notifications = new ArrayList<>();
     private List<Message> messages = new ArrayList<>();
     private String displayName = null;
     private String photoUrl = "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1378871_10151890982237420_1347727989_n.jpg?oh=f8522e0ea7aee1411b67ee45988d5456&oe=5A6FA4C9";
-    private Boolean hasGames = false;
+    private String hasGames = "No";
 
     @Required
     private String email = null;
@@ -46,12 +47,14 @@ public class User {
         this.uid = uid;
         this.email = email;
         this.displayName = email;
+
     }
 
     public User(String uid, String email, String displayName) {
         this.uid = uid;
         this.email = email;
         this.displayName = displayName;
+
     }
 
     public String getUid(){
@@ -84,5 +87,20 @@ public class User {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public List<Game> getGames() {
+        if(games.size() >=1){
+            hasGames = "yes";
+        }
+        return games;
+    }
+
+    public void setGames(List<Game> games) {
+        if(games!= null && games.size() >= 1){
+            this.games = games;
+            hasGames = "no";
+        }
+
     }
 }

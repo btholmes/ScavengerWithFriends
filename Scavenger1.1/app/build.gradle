@@ -49,13 +49,18 @@ dependencies {
     compile 'com.google.firebase:firebase-database:10.0.0'
     compile 'com.google.firebase:firebase-auth:10.0.0'
 
+    //FIREBASE ANALYTICS
+    compile 'com.google.firebase:firebase-core:10.0.0'
+
+
 
     //ANDROID PAY and GOOGLE ANALYTICS
     compile 'com.google.android.gms:play-services-wallet:10.0.0'
     compile 'com.google.android.gms:play-services-analytics:10.0.0'
 
 
-
+    //ADMOB
+    compile 'com.google.firebase:firebase-ads:10.0.0'
     //REALM
     compile 'io.realm:android-adapters:2.0.0'
 

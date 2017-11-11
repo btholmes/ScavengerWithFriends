@@ -14,7 +14,9 @@
     <string name="drawer_close">Close</string>
 
 
+    <!--ADMOB-->
 
+    <string name="adMobID">ca-app-pub-2023686607552716~7618780666</string>
 
     <!--FIREBASE STUFF-->
     <string name="action_sign_in_short">Register</string>
