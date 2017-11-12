@@ -54,9 +54,11 @@ dependencies {
 
 
 
-    //ANDROID PAY and GOOGLE ANALYTICS
+    //ANDROID PAY and GOOGLE ANALYTICS AND LOCATION SERVICES
     compile 'com.google.android.gms:play-services-wallet:10.0.0'
     compile 'com.google.android.gms:play-services-analytics:10.0.0'
+    compile 'com.google.android.gms:play-services-maps:10.0.0'
+    compile 'com.google.android.gms:play-services-location:10.0.0'
 
 
     //ADMOB

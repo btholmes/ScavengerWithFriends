@@ -24,9 +24,9 @@ import android.widget.TextView;
 
 import com.example.btholmes.scavenger11.R;
 import com.example.btholmes.scavenger11.adapter.FriendsListAdapter;
+import com.example.btholmes.scavenger11.application.ScavengerActivity;
 import com.example.btholmes.scavenger11.data.Constant;
 import com.example.btholmes.scavenger11.data.Tools;
-import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.model.Friend;
 import com.example.btholmes.scavenger11.model.Game;
 import com.example.btholmes.scavenger11.model.Player;
@@ -34,13 +34,9 @@ import com.example.btholmes.scavenger11.model.PushNotification;
 import com.example.btholmes.scavenger11.widget.CircleTransform;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
@@ -53,10 +49,9 @@ import static com.example.btholmes.scavenger11.activities.ActivityFriendDetails.
  * Created by btholmes on 11/4/17.
  */
 
-public class ActivityChooseFriend extends AppCompatActivity{
+public class ActivityChooseFriend extends ScavengerActivity{
 
-    private FirebaseUser mFirebaseUser;
-    private DatabaseReference mFirebaseDatabaseReference;
+
     private SearchView search;
     private Toolbar toolbar;
     private ActionBar actionbar;
@@ -89,18 +84,10 @@ public class ActivityChooseFriend extends AppCompatActivity{
         setContentView(R.layout.activity_choose_friend);
 
 
-//        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-//        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
         setUpAdBanner();
 
         title = getIntent().getExtras().getString("title");
 
-
-        mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-
-        //        setContentView(R.layout.activity_choose_friend);
         setToolbar();
         initComponents();
         Tools.systemBarLolipop(this);
@@ -162,10 +149,6 @@ public class ActivityChooseFriend extends AppCompatActivity{
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        Intent intent = new Intent(ActivityChooseFriend.this, MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        startActivity(intent);
-//        finish();
     }
 
     public void setToolbar(){
@@ -195,23 +178,6 @@ public class ActivityChooseFriend extends AppCompatActivity{
 
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//
-//
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//    }
 
     private void dialogChallengeFriend(final Friend f) {
         final Dialog dialog = new Dialog(this);
@@ -244,22 +210,7 @@ public class ActivityChooseFriend extends AppCompatActivity{
         challenge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-//                String challengerUID = mFirebaseUser.getUid();
-//                String opponentUID = f.getUid();
-//                Game gameObj = new Game(challengerUID, opponentUID, list);
-//
-//                addGameToFirebase(gameObj);
-//                setPlayerInfo();
-//                Toast.makeText(ActivityChooseFriend.this, "Challenged Sent!", Toast.LENGTH_SHORT).show();
-//                sendPushNotification();
-
-                Intent intent = new Intent(ActivityChooseFriend.this, MainActivity.class);
-                intent.putExtra(ActivityChatDetails.KEY_FRIEND, friend);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-
+                onBackPressed();
             }
         });
         dialog.show();
@@ -273,7 +224,7 @@ public class ActivityChooseFriend extends AppCompatActivity{
 
                 if(dataSnapshot.getKey().equals("displayName")){
                     String name = dataSnapshot.getValue().toString();
-                    PushNotification msg = new PushNotification("You've Been Challenged", name + " Challenged you", mFirebaseUser.getUid() );
+                    PushNotification msg = new PushNotification("You've Been Challenged", name + " Challenged you", user.getUid() );
                     mFirebaseDatabaseReference.child("userList").child(friend.getUid()).child("pushNotifications").setValue(msg);
                 }
 
@@ -314,7 +265,7 @@ public class ActivityChooseFriend extends AppCompatActivity{
         opponent.setAcceptedChallenge(false);
         opponent.setChallenger(false);
 
-        String challengerUID = mFirebaseUser.getUid();
+        String challengerUID = user.getUid();
         Player challenger = new Player(challengerUID, list);
         challenger.setAcceptedChallenge(true);
         challenger.setChallenger(true);
