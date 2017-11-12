@@ -44,24 +44,23 @@ public class MainActivity extends DrawerActivity {
 
     }
 
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        vpPref = getPreferences(MODE_PRIVATE);
-//        viewPagerPage = vpPref.getInt("viewPagerPage", 0);
-//
-//        viewPager.setCurrentItem(viewPagerPage);
-//        auth.addAuthStateListener(firebaseAuthListner);
-//        viewPager.getAdapter().notifyDataSetChanged();
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        int index = viewPager.getCurrentItem();
-//        getPreferences(MODE_PRIVATE).edit().putInt("viewPagerPage", index).commit();
-//    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        vpPref = getPreferences(MODE_PRIVATE);
+        viewPagerPage = vpPref.getInt("viewPagerPage", 0);
+
+        viewPager.setCurrentItem(viewPagerPage);
+        auth.addAuthStateListener(firebaseAuthListner);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        int index = viewPager.getCurrentItem();
+        getPreferences(MODE_PRIVATE).edit().putInt("viewPagerPage", index).commit();
+    }
 
 
 }
