@@ -100,18 +100,18 @@ public class DrawerActivity extends ScavengerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
-//        checkUserNull();
+        checkUserNull();
         initComponents();
         initAction();
         setupDrawerLayout();
 
         setupTabIcons();
         setupTabClick();
-//        setAvatar();
-//        getDisplayName();
-//
-//        prepareActionBar(toolbar);
-//        changeDefaultIcon();
+        setAvatar();
+        getDisplayName();
+
+        prepareActionBar(toolbar);
+        changeDefaultIcon();
 
         // for system bar in lollipop
         Tools.systemBarLolipop(this);
