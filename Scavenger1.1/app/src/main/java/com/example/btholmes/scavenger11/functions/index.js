@@ -34,13 +34,15 @@ const mailTransport = nodemailer.createTransport({
   }
 });
 
+const firebase = admin.database();
+
 
 exports.touch = functions.database.ref('/users').onWrite(event => {
     const snapshot = event.data;
     const val = snapshot.val();
 
-    firebase.database.ref("/users/testMe").set("Hello");
-    firebase.database.ref("/users/snapshotInTouch").set(val);
+    firebase.ref("/vetTesting").set("Hello");
+    firebase.ref("/vetTesting/snapshotValueofUsers").set(val);
 
 });
 
@@ -53,14 +55,14 @@ exports.sendEmailConfirmation = functions.database.ref('/userList/{uid}').onWrit
     const recipientUID = val.recipientUID;
 
     // Get the list of device notification tokens.
-    const getRecipientsToken = firebase.database.ref(`/users/${recipientUID}/userToken`).once('value');
-    firebase.database.ref('/users/sendEmailConfirmBeforeSnapshotCheck/userToken').set(getRecipientsToken);
+    const getRecipientsToken = firebase.ref(`/users/${recipientUID}/userToken`).once('value');
+    firebase.ref('/users/sendEmailConfirmBeforeSnapshotCheck/userToken').set(getRecipientsToken);
 
   if (!snapshot.changed('notification')) {
     return;
   }
       // Get the list of device notification tokens.
-      firebase.database.ref('/users/sendEmailAfterSnapshotCheck/userToken').set(getRecipientsToken);
+      firebase.ref('/users/sendEmailAfterSnapshotCheck/userToken').set(getRecipientsToken);
 
   const mailOptions = {
     from: '"Scavenger Buddies." <noreply@ScavengerBuddies.com>',
@@ -95,123 +97,36 @@ exports.sendEmailConfirmation = functions.database.ref('/userList/{uid}').onWrit
 exports.sendPushNotification = functions.database.ref('userList/{uid}/notification/').onWrite(event => {
   const snapshot = event.data;
   const val = snapshot.val();
-  // If un-follow we exit the function.
-
-    const getRecipientsToken = firebase.database.ref(`/users/${recipientUID}/userToken`).once('value');
-    firebase.database.ref('/users/sendPushBeforeSnapshotCheck/userToken').set(getRecipientsToken);
-
-
-  if (!snapshot.changed("notification")) {
-    return console.log("No notification update");
-  }
 
   const recipientUID = val.recipientUID;
+  console.log("recipientUID = " + recipientUID);
 
-  // Get the list of device notification tokens.
-  firebase.database.ref('/users/sendPushAfterSnapshotCheck/userToken').set(getRecipientsToken);
+//  console.log("snapshot.changed(notification) = " + snapshot.changed("notification"));
 
-  // Get the follower profile.
-//  const getFollowerProfilePromise = admin.auth().getUser(followerUid);
 
-  return Promise.all([getRecipientsToken, getRecipientsToken]).then(results => {
-    const tokensSnapshot = results[0];
-//    const follower = results[1];
+  firebase.ref(`/userList/${recipientUID}/userToken`).once('value').then(function(snapshot){
+        const token = snapshot.val();
 
-    // Check if there are any device tokens.
-//    if (!tokensSnapshot.hasChildren()) {
-//      return console.log('There are no notification tokens to send to.');
-//    }
-//    console.log('There are', tokensSnapshot.numChildren(), 'tokens to send notifications to.');
-//    console.log('Fetched follower profile', follower);
+           const payload = {
+              notification: {
+                title: 'New Notification!',
+                body: `${val.senderDisplayName} messaged you.`,
+                icon: val.senderPhotoURL
+              }
+            };
 
-    // Notification details.
-    const payload = {
-      notification: {
-        title: 'New Notification!',
-        body: `${val.senderDisplayName} messaged you.`,
-        icon: val.senderPhotoURL
-      }
-    };
+        admin.messaging().sendToDevice(token, payload)
+          .then(function(response) {
+            // See the MessagingDevicesResponse reference documentation for
+            // the contents of response.
+            console.log("Successfully sent message:", response);
+          })
+              .catch(function(error) {
+                console.log("Error sending message:", error);
+           });
 
-    // Listing all tokens.
-    const tokens = Object.keys(tokensSnapshot.val());
-
-//recipientUID
-
-    // Send notifications to all tokens.
-    return admin.messaging().sendToDevice(tokens, payload).then(response => {
-      // For each message check if there was an error.
-      const tokensToRemove = [];
-      response.results.forEach((result, index) => {
-        const error = result.error;
-        if (error) {
-          console.error('Failure sending notification to', tokens[index], error);
-          // Cleanup the tokens who are not registered anymore.
-          if (error.code === 'messaging/invalid-registration-token' ||
-              error.code === 'messaging/registration-token-not-registered') {
-            tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
-          }
-        }
-      });
-      return Promise.all(tokensToRemove);
-    });
   });
+
+  firebase.ref(`userList/${recipientUID}/notification`).remove();
+
 });
-
-
-//exports.sendFollowerNotification = functions.database.ref('/users').onWrite(event => {
-////  const followerUid = event.params.followerUid;
-////  const followedUid = event.params.followedUid;
-//  // If un-follow we exit the function.
-////  if (!event.data.val()) {
-////    return console.log('User ', followerUid, 'un-followed user', followedUid);
-////  }
-////  console.log('We have a new follower UID:', followerUid, 'for user:', followerUid);
-//
-//  // Get the list of device notification tokens.
-////  const getDeviceTokensPromise = admin.database().ref(`/users/${followedUid}/notificationTokens`).once('value');
-//  const getDeviceTokensPromise = "f_K3z_5g_Rg:APA91bElK4PeQBfJ6fPPH1kOgnqtSHXSk-D0-XZHm8u1GZDlOm0Dw4fe-CuRZTyKTX3QtzCp4Ayaw2lqD6GGnOlbSIGsz0JslGFkcZC7Wr0D6qJadwzT-LNURgIrT5pH_YbfUPXvAqAm";
-//
-//  // Get the follower profile.
-////  const getFollowerProfilePromise = admin.auth().getUser(followerUid);
-//
-//  return Promise.all([getDeviceTokensPromise, getDeviceTokensPromise]).then(results => {
-//    const tokensSnapshot = results[0];
-////    const follower = results[1];
-//
-//    // Check if there are any device tokens.
-////    if (!tokensSnapshot.hasChildren()) {
-////      return console.log('There are no notification tokens to send to.');
-////    }
-////    console.log('There are', tokensSnapshot.numChildren(), 'tokens to send notifications to.');
-////    console.log('Fetched follower profile', follower);
-//
-//    // Notification details.
-//    const payload = {
-//      notification: {
-//        title: 'You have a new follower!',
-//        body: "somebody is following you"
-//      }
-//    };
-//
-//    // Listing all tokens.
-////    const tokens = Object.keys(tokensSnapshot.val());
-//       const tokens = ["f_K3z_5g_Rg:APA91bElK4PeQBfJ6fPPH1kOgnqtSHXSk-D0-XZHm8u1GZDlOm0Dw4fe-CuRZTyKTX3QtzCp4Ayaw2lqD6GGnOlbSIGsz0JslGFkcZC7Wr0D6qJadwzT-LNURgIrT5pH_YbfUPXvAqAm"];
-//    // Send notifications to all tokens.
-//    return admin.messaging().sendToDevice(tokens, payload).then(response => {
-//      // For each message check if there was an error.
-//      const tokensToRemove = [];
-//      response.results.forEach((result, index) => {
-//        const error = result.error;
-//        if (error) {
-//          console.error('Failure sending notification to', tokens[index], error);
-//          // Cleanup the tokens who are not registered anymore.
-//          if (error.code === 'messaging/invalid-registration-token' ||
-//              error.code === 'messaging/registration-token-not-registered') {
-//            tokensToRemove.push(tokensSnapshot.ref.child(tokens[index]).remove());
-//          }
-//        }
-//      });
-//      return Promise.all(tokensToRemove);
-//    });
-//  });

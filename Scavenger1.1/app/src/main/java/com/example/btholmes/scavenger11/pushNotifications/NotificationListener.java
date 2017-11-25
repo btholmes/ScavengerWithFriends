@@ -106,7 +106,8 @@ public class NotificationListener extends Service {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(random.nextInt(), builder.build());
 //        PushNotification updateMsg = new PushNotification("none");
-        mFirebaseDatabaseReference.child("userList").child(currentUser.getUid()).child("notification").removeValue();
+
+//        mFirebaseDatabaseReference.child("userList").child(currentUser.getUid()).child("notification").removeValue();
 
     }
 }

@@ -1,6 +1,7 @@
 {
   "projects": {
     "scavengerBuddies": "scavengerwithfriends",
-    "default": "scavengerwithfriends"
+    "default": "scavengerwithfriends",
+    "scavenger": "scavengerwithfriends"
   }
 }
