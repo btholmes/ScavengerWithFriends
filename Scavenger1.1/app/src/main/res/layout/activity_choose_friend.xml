@@ -51,8 +51,8 @@
     </com.google.android.gms.ads.AdView>
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <ListView
+            android:id="@+id/listView"
             android:scrollingCache="false"
             android:cacheColorHint="#0000"
             android:layout_width="match_parent"

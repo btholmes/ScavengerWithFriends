@@ -15,6 +15,7 @@ public class Friend implements Serializable {
 	}
 
 	public Friend(long id, String name, int photo) {
+
 		this.id = id;
 		this.name = name;
 		this.photo = photo;

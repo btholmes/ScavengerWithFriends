@@ -11,21 +11,25 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 
+import com.example.btholmes.scavenger11.application.ScavengerActivity;
+import com.example.btholmes.scavenger11.model.Friend;
 import com.example.btholmes.scavenger11.model.Game;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.btholmes.scavenger11.model.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class Utility {
+public class Utility extends ScavengerActivity {
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
-    public static DatabaseReference mFirebaseDatabaseReference;
-    public static FirebaseUser currentUser;
+
     public static ArrayList<Game> gameList;
+    public static ArrayList<Friend> friendList;
     public static Context ctx;
     public static Utility utility;
+    public static User currentUser;
 
 
     public static Utility getInstance(Context context){
@@ -35,11 +39,18 @@ public class Utility {
 
     public Utility (Context context){
         ctx = context;
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         gameList = new ArrayList<>();
+        friendList = new ArrayList<>();
+        currentUser = null;
     }
 
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User currentUser) {
+        Utility.currentUser = currentUser;
+    }
 
     /**
      * This will return null if user has no games list in Firebase
@@ -68,19 +79,42 @@ public class Utility {
 
     }
 
-
-    public static void addPhotoUrl(FirebaseUser user){
-        String url = null;
-        if(user.getPhotoUrl() != null){
-            url = user.getPhotoUrl().toString();
-        }
-        if(url != null){
-            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(url);
-        }else{
-            String defaultPic = "http://vvcexpl.com/wordpress/wp-content/uploads/2013/09/profile-default-male.png";
-            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(defaultPic);
-        }
+    public interface getUserCallback{
+        void onSuccess(User currentUser);
+        void onError();
     }
+
+    /**
+     * This is called by main activity to retrieve User from firebase, then save the User to realm. Happens in OnCreate
+     * @param callback
+     */
+    public static void getFirebaseUser(final getUserCallback callback){
+        //
+        final Query ref = mFirebaseDatabaseReference.child("userList").child(user.getUid());
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+               User person = dataSnapshot.getValue(User.class);
+               currentUser = person;
+               callback.onSuccess(currentUser);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+    }
+
+    /**
+     * This function will get an arrayList of all friends from the database
+     * @param callback
+     */
+    public static void populateFriends(final friendsCallback callback){
+
+
+    }
+
+
 
 
 

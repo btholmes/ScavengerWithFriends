@@ -3,9 +3,6 @@ package com.example.btholmes.scavenger11.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Created by btholmes on 11/4/17.
  */
@@ -15,32 +12,23 @@ import io.realm.annotations.Required;
  */
 public class User {
 
+    private String displayName = null;
+    private String email = null;
+    private String photoUrl = "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1378871_10151890982237420_1347727989_n.jpg?oh=f8522e0ea7aee1411b67ee45988d5456&oe=5A6FA4C9";
+    private String uid = null;
 
-    private String userToken = null;
+    private int wins = 0;
+    private int losses = 0;
+
     private List<Game> games = new ArrayList<>();
+    private String userToken = null;
     private List<PushNotification> notifications = new ArrayList<>();
     private List<Message> messages = new ArrayList<>();
-    private String displayName = null;
-    private String photoUrl = "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1378871_10151890982237420_1347727989_n.jpg?oh=f8522e0ea7aee1411b67ee45988d5456&oe=5A6FA4C9";
     private String hasGames = "No";
-
-    @Required
-    private String email = null;
-
-    @Required
-    @PrimaryKey
-    private String uid = null;
 
 
     public User() {
 
-    }
-
-    public static User create(String uid, String email){
-        User user = new User();
-        user.uid = uid;
-        user.email = email;
-        return user;
     }
 
     public User(String uid, String email){
@@ -55,6 +43,22 @@ public class User {
         this.email = email;
         this.displayName = displayName;
 
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLosses() {
+        return losses;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
     }
 
     public String getUid(){
@@ -89,6 +93,14 @@ public class User {
         this.photoUrl = photoUrl;
     }
 
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
+    }
+
     public List<Game> getGames() {
         if(games.size() >=1){
             hasGames = "yes";
@@ -102,5 +114,29 @@ public class User {
             hasGames = "no";
         }
 
+    }
+
+    public List<PushNotification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<PushNotification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public String getHasGames() {
+        return hasGames;
+    }
+
+    public void setHasGames(String hasGames) {
+        this.hasGames = hasGames;
     }
 }

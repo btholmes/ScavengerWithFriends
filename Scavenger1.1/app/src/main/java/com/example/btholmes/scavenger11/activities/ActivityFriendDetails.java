@@ -15,9 +15,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.example.btholmes.scavenger11.R;
+import com.example.btholmes.scavenger11.application.ScavengerActivity;
 import com.example.btholmes.scavenger11.model.Friend;
 
-public class ActivityFriendDetails extends AppCompatActivity {
+public class ActivityFriendDetails extends ScavengerActivity {
     public static final String EXTRA_OBJCT = "com.app.sample.social.FRIEND";
 
     // give preparation animation activity transition

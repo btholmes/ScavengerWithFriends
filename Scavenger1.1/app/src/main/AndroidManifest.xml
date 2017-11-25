@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.btholmes.scavenger11">
+    package="com.example.btholmes.scavenger11"
+    android:versionCode="1"
+    android:versionName="0.0.1"
+    >
 
+    <!--Basically just almost all the permissions.. I will reduce this to only the ones I need-->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="edu.iastate.MyState.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
 
 
@@ -58,6 +75,26 @@
             ></activity>
 
         <activity android:name=".activities.ActivityChooseFriend"></activity>
+
+
+        <!--BADGER SERVICE-->
+        <!--<service-->
+            <!--android:name=".services.BadgeIntentService"-->
+            <!--android:exported="false"></service>-->
+
+        <service
+            android:name=".pushNotifications.FireIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".pushNotifications.FireMsgService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
 
         <service android:name=".pushNotifications.NotificationListener"/>

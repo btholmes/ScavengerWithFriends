@@ -39,19 +39,14 @@ import com.example.btholmes.scavenger11.fragment.MessageFragment;
 import com.example.btholmes.scavenger11.fragment.NotificationFragment;
 import com.example.btholmes.scavenger11.fragment.StoreFragment;
 import com.example.btholmes.scavenger11.login.LoginActivity;
-import com.example.btholmes.scavenger11.pushNotifications.NotificationListener;
 import com.example.btholmes.scavenger11.widget.CircleTransform;
 import com.facebook.login.LoginManager;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -100,15 +95,15 @@ public class DrawerActivity extends ScavengerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
-        checkUserNull();
         initComponents();
         initAction();
         setupDrawerLayout();
 
         setupTabIcons();
         setupTabClick();
-        setAvatar();
-        getDisplayName();
+//        setAvatar();
+//        getDisplayName();
+        displayName.setText(user.getDisplayName());
 
         prepareActionBar(toolbar);
         changeDefaultIcon();
@@ -117,7 +112,7 @@ public class DrawerActivity extends ScavengerActivity {
         Tools.systemBarLolipop(this);
     }
 
-    public void initComponents(){
+    private void initComponents(){
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         setSupportActionBar(toolbar);
@@ -164,6 +159,7 @@ public class DrawerActivity extends ScavengerActivity {
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Challenged A Friend");
                 logFirebaseEvent("Challenge A Friend", bundle);
 
+
                 ActivityChooseFriend.navigate(DrawerActivity.this, view, "Challenge Friend");
 
 //                Intent intent = new Intent(getActivity(), ActivityChooseFriend.class);
@@ -198,24 +194,12 @@ public class DrawerActivity extends ScavengerActivity {
 
     private void setAvatar() {
         if(avatar != null){
-            final Query ref = mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl");
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    String url = dataSnapshot.getValue().toString();
-                    Picasso.with(getApplicationContext()).load(url).resize(100, 100).transform(new CircleTransform()).into(avatar);
 
-                    avatar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
+            Picasso.with(getApplicationContext()).load(user.getPhotoUrl()).resize(100, 100).transform(new CircleTransform()).into(avatar);
+            avatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 //                            selectImage();
-                        }
-                    });
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
 
@@ -276,7 +260,7 @@ public class DrawerActivity extends ScavengerActivity {
     /**
      * This function calls Firebase for the DisplayName from userList
      */
-    private void getDisplayName() {
+    private void getDisplayNameDUD() {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         displayName.setText(user.getDisplayName());
@@ -316,62 +300,13 @@ public class DrawerActivity extends ScavengerActivity {
 
     }
 
-
-    public void goToLogin(){
+    protected void goToLogin(){
         Intent intent = new Intent(DrawerActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
 
-    public void addTokenToDB(){
-        String tkn = FirebaseInstanceId.getInstance().getToken();
-        mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("userToken").setValue(tkn);
-    }
-
-    public void checkUserNull(){
-        if (user == null) {
-            startActivity(new Intent(DrawerActivity.this, LoginActivity.class));
-            finish();
-        }
-        else{
-            addUserToDB(user);
-            addPhotoUrl(user);
-
-            final Query ref = mFirebaseDatabaseReference.child("userList").child(user.getUid());
-            ref.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-                    if(dataSnapshot.getKey().equals("pushNotifications")){
-                        startService(new Intent(DrawerActivity.this, NotificationListener.class));
-//        startService(new Intent(this, photoChangeService.class));
-                    }
-
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -447,6 +382,8 @@ public class DrawerActivity extends ScavengerActivity {
         View header = view.getHeaderView(0);
 
         avatar = (ImageView) header.findViewById(R.id.avatar);
+        setAvatar();
+
 
         userEmail = (TextView) header.findViewById(R.id.userEmail);
         userEmail.setText(user.getEmail());
@@ -502,7 +439,6 @@ public class DrawerActivity extends ScavengerActivity {
                 }else if(menuItem.getTitle().equals("Sign Out")){
                     signOut();
                 }
-
 //                Snackbar.make(parent_view, menuItem.getTitle()+" Clicked ", Snackbar.LENGTH_SHORT).show();
                 return true;
             }
@@ -571,6 +507,7 @@ public class DrawerActivity extends ScavengerActivity {
     public void signOut(){
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
+        goToLogin();
     }
 
     @Override
@@ -598,28 +535,11 @@ public class DrawerActivity extends ScavengerActivity {
         return true;
     }
 
-    private void addPhotoUrl(FirebaseUser user){
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        String url = null;
-        if(user.getPhotoUrl() != null){
-            url = user.getPhotoUrl().toString();
-        }
-        if(url != null){
-            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(url);
-        }else{
-            String defaultPic = "http://vvcexpl.com/wordpress/wp-content/uploads/2013/09/profile-default-male.png";
-            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("photoUrl").setValue(defaultPic);
-        }
-    }
 
-    private void addUserToDB(FirebaseUser userToAdd){
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.child("userList").child(userToAdd.getUid()).child("uid").setValue(userToAdd.getUid());
-    }
 
     private long exitTime = 0;
 
-    public void doExitApp() {
+    protected void doExitApp() {
         if ((System.currentTimeMillis() - exitTime) > 2000) {
             Toast.makeText(this, "Press back again to exit app", Toast.LENGTH_SHORT).show();
             exitTime = System.currentTimeMillis();

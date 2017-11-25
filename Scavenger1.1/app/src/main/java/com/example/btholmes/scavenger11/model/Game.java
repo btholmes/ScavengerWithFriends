@@ -5,6 +5,7 @@ package com.example.btholmes.scavenger11.model;
  */
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -25,14 +26,14 @@ public class Game {
     @Required
     private String opponent;
     @Required
-    private String words;
-//    private List<String> words = new ArrayList<>();
+//    private String words;
+    private List<String> words = new ArrayList<>();
     @Required
-    private String opponentWordsLeft;
-//    private List<String> opponentWordsLeft = new ArrayList<>();
+//    private String opponentWordsLeft;
+    private List<String> opponentWordsLeft = new ArrayList<>();
     @Required
-    private String challengerWordsLeft;
-//   private List<String> challengerWordsLeft = new ArrayList<>();
+//    private String challengerWordsLeft;
+   private List<String> challengerWordsLeft = new ArrayList<>();
 
 
     private String challengerDisplayName;
@@ -57,7 +58,8 @@ public class Game {
         Random random = new Random();
         String gameID = System.currentTimeMillis() +""+ random.nextInt(100000);
 
-        this.words = words.toString();
+//        this.words = words.toString();
+        this.words = words;
         this.gameID = gameID;
         date =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         this.challenger = challenger;
@@ -163,21 +165,21 @@ public class Game {
         this.lastPictureTaken = lastPictureTaken;
     }
 
-//    public List<String> getOpponentWordsLeft() {
-//        return opponentWordsLeft;
-//    }
-//
-//    public void setOpponentWordsLeft(List<String> opponentWordsLeft) {
-//        this.opponentWordsLeft = opponentWordsLeft;
-//    }
-//
-//    public List<String> getChallengerWordsLeft() {
-//        return challengerWordsLeft;
-//    }
-//
-//    public void setChallengerWordsLeft(List<String> challengerWordsLeft) {
-//        this.challengerWordsLeft = challengerWordsLeft;
-//    }
+    public List<String> getOpponentWordsLeft() {
+        return opponentWordsLeft;
+    }
+
+    public void setOpponentWordsLeft(List<String> opponentWordsLeft) {
+        this.opponentWordsLeft = opponentWordsLeft;
+    }
+
+    public List<String> getChallengerWordsLeft() {
+        return challengerWordsLeft;
+    }
+
+    public void setChallengerWordsLeft(List<String> challengerWordsLeft) {
+        this.challengerWordsLeft = challengerWordsLeft;
+    }
 
     public long getOpponentTimeElapsed() {
         return opponentTimeElapsed;

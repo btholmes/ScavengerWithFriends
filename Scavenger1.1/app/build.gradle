@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.example.btholmes.scavenger11"
         minSdkVersion 21
@@ -13,9 +13,25 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            /**
+             * This is for proguard
+             */
+            minifyEnabled true
+            useProguard true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        /**
+         * Commented out below is also for ProGuard, setting shrinkResources usually causes the app to fail though...
+         */
+        debug {
+            debuggable true
+//            minifyEnabled true
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+
     }
 
 //    lintOptions {
@@ -30,44 +46,92 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-
-    //For swipe down refresh
-    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
-    compile 'com.squareup.picasso:picasso:2.5.2'
-
-
-    compile 'com.facebook.android:facebook-login:[4,5)'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
+//    compile 'com.balysv:material-ripple:1.0.2'
 
-    compile 'com.balysv:material-ripple:1.0.2'
+    /**
+     * To add badge icons to app
+     */
+    compile "me.leolin:ShortcutBadger:1.1.19@aar"
 
-    //FIREBASE
+    /**
+     * Swipe Down Refresh
+     */
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    /**
+     * Picasso
+     */
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    /**
+     * Facebook Login
+     */
+    compile 'com.facebook.android:facebook-login:[4,5)'
+    /**
+     * Basic Firebase Stuff
+     */
     compile 'com.google.firebase:firebase-database:10.0.0'
     compile 'com.google.firebase:firebase-auth:10.0.0'
+    compile 'com.google.firebase:firebase-messaging:10.0.0'
 
-    //FIREBASE ANALYTICS
+    /**
+     * Firebase Analytics
+     */
     compile 'com.google.firebase:firebase-core:10.0.0'
+    compile 'com.google.firebase:firebase-crash:10.0.0'
+    /**
+     * Firebase Crashalytics
+     */
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
 
+    /**
+     * Firebase list adapter
+     */
+    compile 'com.firebaseui:firebase-ui-database:1.0.1'
 
-
-    //ANDROID PAY and GOOGLE ANALYTICS AND LOCATION SERVICES
+    /**
+     * Android Pay
+     */
     compile 'com.google.android.gms:play-services-wallet:10.0.0'
+    /**
+     * Google Analytics
+     */
     compile 'com.google.android.gms:play-services-analytics:10.0.0'
+    /**
+     * Google Maps??
+     */
     compile 'com.google.android.gms:play-services-maps:10.0.0'
+    /**
+     * To add location API to geoLocation
+     */
     compile 'com.google.android.gms:play-services-location:10.0.0'
 
-
-    //ADMOB
+    /**
+     * AdMob
+     */
     compile 'com.google.firebase:firebase-ads:10.0.0'
-    //REALM
+    /**
+     * Realm
+     */
     compile 'io.realm:android-adapters:2.0.0'
 
+
     testCompile 'junit:junit:4.12'
+    /**
+     * Firebase Crashalytics apply
+     */
+    apply plugin: 'io.fabric'
+    /**
+     * Google Play Services apply
+     */
     apply plugin: 'com.google.gms.google-services'
+    /**
+     * Realm apply
+     */
     apply plugin: 'realm-android'
 }
 

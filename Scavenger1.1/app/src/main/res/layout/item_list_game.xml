@@ -2,20 +2,25 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:layout_margin="@dimen/spacing_medium"
+    android:orientation="vertical">
 
-    <com.balysv.materialripple.MaterialRippleLayout
-        android:id="@+id/lyt_parent"
-        style="@style/RippleStyleWhite"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_margin="@dimen/spacing_medium">
-
+    <!--<com.balysv.materialripple.MaterialRippleLayout-->
+    <!--android:id="@+id/lyt_parent"-->
+    <!--style="@style/RippleStyleWhite"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="150dp"-->
+    <!--android:layout_margin="@dimen/spacing_medium">-->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/image"
+                android:background="@drawable/border_circle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
@@ -68,12 +73,13 @@
                         android:id="@+id/wordsLeft"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/spacing_small"
+                        android:layout_margin="@dimen/spacing_small"
                         android:text="Words Left"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:textColor="@android:color/white" />
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>
-    </com.balysv.materialripple.MaterialRippleLayout>
+</LinearLayout>
+    <!--</com.balysv.materialripple.MaterialRippleLayout>-->
 </RelativeLayout>

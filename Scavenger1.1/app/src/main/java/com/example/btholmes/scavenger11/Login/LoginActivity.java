@@ -7,7 +7,6 @@ package com.example.btholmes.scavenger11.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -18,9 +17,7 @@ import android.widget.Toast;
 
 import com.example.btholmes.scavenger11.R;
 import com.example.btholmes.scavenger11.activities.ActivitySignUp;
-import com.example.btholmes.scavenger11.main.MainActivity;
-import com.example.btholmes.scavenger11.model.User;
-import com.example.btholmes.scavenger11.tools.Utility;
+import com.example.btholmes.scavenger11.activities.BasicActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,67 +30,44 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BasicActivity {
+
 
     private LoginButton loginButton;
     private CallbackManager callbackManager;
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference mFirebaseDatabaseRef;
-    private FirebaseAuth.AuthStateListener firebaseAuthListner;
 
-
-
-    //    GOOGLE
-    private static final String TAG = "SignInActivity";
-    private static final int RC_SIGN_IN = 0 ;
-
-
-
-    //    FROM MAIN PAGE
     private EditText inputEmail, inputPassword;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
-    private FirebaseUser currentUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
-
-        //SO user doesn't have to log in everytime
-        firebaseAuthListner = new FirebaseAuth.AuthStateListener(){
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                currentUser = user;
-                if(user != null){
-                    checkNewUser();
-//                    goMainScreen();
-                }
-            }
-        };
-
+        setUpAuthListener();
         configureFacebook();
         initComponent();
 
     }
 
-//
-
-
+//    @Override
+//    protected void setUpAuthListener() {
+//        firebaseAuthListner = new FirebaseAuth.AuthStateListener(){
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//                if(user != null){
+//                    checkNewUser();
+//                }
+//            }
+//        };
+//        auth.addAuthStateListener(firebaseAuthListner);
+//    }
 
     private void configureFacebook(){
         //Does this work?
@@ -107,12 +81,16 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
-
                 handleFacebookAccessToken(loginResult.getAccessToken());
+                Toast.makeText(LoginActivity.this, "This takes a moment, please wait..", Toast.LENGTH_SHORT).show();
+                /**
+                 * The facebook progress bar hides too soon, so I just disable the buttons so that the user doesn't
+                 * accidentally click out of the app before they get redirected to the main screen
+                 */
+                btnLogin.setEnabled(false);
+                btnReset.setEnabled(false);
+                btnSignup.setEnabled(false);
                 Log.e("Debug", "success");
-//                goMainScreen();
-
             }
 
             @Override
@@ -128,6 +106,8 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+
+
     private void initComponent(){
 
         inputEmail = (EditText) findViewById(R.id.email);
@@ -137,10 +117,10 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnReset = (Button) findViewById(R.id.btn_reset_password);
 
+        setUpButtonClicks();
+    }
 
-
-
-
+    private void setUpButtonClicks(){
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,16 +152,20 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 progressBar.setVisibility(View.VISIBLE);
-
-//                authenticate user
                 signInUser(email, password);
+
 
             }
         });
     }
 
+    /**
+     * This got moved to Scavenger Activity
+     * @param email
+     * @param password
+     */
     private void signInUser(String email, final String password){
-        firebaseAuth.signInWithEmailAndPassword(email, password)
+        auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -192,57 +176,35 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                             }
+                        }else{
+//                            FirebaseUser user = auth.getCurrentUser();
                         }
                     }
                 });
     }
 
+
+
+
+
     private void handleFacebookAccessToken(AccessToken accessToken) {
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(!task.isSuccessful()){
                     Toast.makeText(getApplicationContext(), "Error with Firebase", Toast.LENGTH_LONG).show();
                 }else{
-//                    addToDB();
+                    user = auth.getCurrentUser();
 
                 }
             }
         });
     }
 
-    private void checkNewUser(){
-        mFirebaseDatabaseRef.child("userList").child(currentUser.getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    // use "username" already exists
-                    goMainScreen();
-                } else {
-                    // "username" does not exist yet.
-                    addToDB();
-                    Utility.getInstance(LoginActivity.this).addPhotoUrl(currentUser);
-                    goMainScreen();
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-    }
 
-    /**
-     * Handles adding someone who clicked Log In with Facebook, this gets called after the Auth listener has already registerd a change
-     * in the user.
-     */
-    private void addToDB(){
-        User newUser = new User(currentUser.getUid(), currentUser.getEmail(), currentUser.getDisplayName());
-        mFirebaseDatabaseRef.child("userList").child(currentUser.getUid()).setValue(newUser);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -250,44 +212,4 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-
-//    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-//        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-//
-//        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-//        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-//                        // If sign in fails, display a message to the user. If sign in succeeds
-//                        // the auth state listener will be notified and logic to handle the
-//                        // signed in user can be handled in the listener.
-//                        if (!task.isSuccessful()) {
-//                            Log.w(TAG, "signInWithCredential", task.getException());
-//                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-//                                    Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
-//    }
-
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        firebaseAuth.addAuthStateListener(firebaseAuthListner);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        firebaseAuth.removeAuthStateListener(firebaseAuthListner);
-    }
-
-    public void goMainScreen(){
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
 }

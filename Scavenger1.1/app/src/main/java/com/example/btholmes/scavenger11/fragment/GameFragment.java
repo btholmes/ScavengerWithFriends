@@ -3,53 +3,44 @@ package com.example.btholmes.scavenger11.fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.btholmes.scavenger11.R;
 import com.example.btholmes.scavenger11.adapter.GameListAdapter;
 import com.example.btholmes.scavenger11.model.Game;
-import com.example.btholmes.scavenger11.tools.Utility;
 import com.example.btholmes.scavenger11.tools.gameCallback;
-import com.google.firebase.auth.FirebaseUser;
+import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class GameFragment extends Fragment {
+public class GameFragment extends ScavengerFragment {
 
-    private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseUser currentUser;
-    private Utility utility;
+
 
     private View view;
     private ViewGroup container;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressbar;
-    private RecyclerView recyclerView;
+//    private RecyclerView recyclerView;
+    private ListView listView;
+    private FirebaseListAdapter firebaseListAdapter;
     private GameListAdapter mAdapter;
     private static ArrayList<Game> gameList = new ArrayList<>();
     private Boolean ON_PAUSE;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        utility = new Utility(getContext());
-
-    }
 
 
 
@@ -73,17 +64,61 @@ public class GameFragment extends Fragment {
                     @Override
                     public void onRefresh() {
                         //Collect Game data in background thread
-                        new getGames().execute();
+//                        new getGames().execute();
+                        setFirebaseAdapter();
                     }
                 });
 
 
         progressbar = (ProgressBar) view.findViewById(R.id.progressbar);
-        progressbar.setVisibility(View.VISIBLE);
         gameList.clear();
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
-        recyclerView.setHasFixedSize(true);
+//        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+//        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+//        recyclerView.setHasFixedSize(true);
+        listView = (ListView) view.findViewById(R.id.listView);
+        setFirebaseAdapter();
+    }
+
+    private void setFirebaseAdapter() {
+        progressbar.setVisibility(View.VISIBLE);
+
+        DatabaseReference ref = mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("games");
+        firebaseListAdapter = new FirebaseListAdapter<Game>(
+                getActivity(),
+                Game.class,
+                R.layout.item_list_game,
+                ref
+        ){
+            @Override
+            protected void populateView(View v, Game model, int position) {
+
+                ImageView backgroundImage = (ImageView) v.findViewById(R.id.image);
+                ImageView icon = (ImageView) v.findViewById(R.id.icon);
+                TextView name = (TextView) v.findViewById(R.id.name);
+                TextView wordsLeft = (TextView) v.findViewById(R.id.wordsLeft);
+                TextView losses = (TextView) v.findViewById(R.id.losses);
+
+                v.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+//                        Go to game page
+                        Toast.makeText(getActivity(), "This action is not set up yet", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+//                Picasso.with(getActivity()).load(sdf)
+//                        .resize(100,100)
+//                        .transform(new CircleTransform())
+//                        .into(backgroundImage);
+                name.setText(model.getChallengerWordsLeft().toString());
+
+
+            }
+
+        };
+        progressbar.setVisibility(View.GONE);
+        listView.setAdapter(firebaseListAdapter);
     }
 
 
@@ -92,7 +127,7 @@ public class GameFragment extends Fragment {
         super.onResume();
 
 //        gameList = new ArrayList<>(Constant.getRandomGame(getContext()));
-        new getGames().execute();
+//        new getGames().execute();
 //        if(ON_PAUSE){
 //            ON_PAUSE = false;
 //            getFragmentManager()
@@ -180,6 +215,12 @@ public class GameFragment extends Fragment {
             return null;
         }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressbar.setVisibility(View.GONE);
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     private void refreshGames(){
@@ -193,7 +234,10 @@ public class GameFragment extends Fragment {
                     mAdapter.setOnItemClickListener(new GameListAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(View v, Game obj, int position) {
-                            Toast.makeText(getContext(), "Clicked Game", Toast.LENGTH_SHORT).show();
+                            /**
+                             * Just a note, Toast cannot be executed in background
+                             */
+//                            Toast.makeText(getContext(), "Clicked Game", Toast.LENGTH_SHORT).show();
 //                                            if (actionMode != null) {
 //                                                myToggleSelection(position);
 //                                                return;
@@ -202,19 +246,18 @@ public class GameFragment extends Fragment {
                         }
                     });
 
-                recyclerView.setAdapter(mAdapter);
+//                recyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
 
             }
 
             @Override
             public void onError() {
-                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
 
             }
         });
-        progressbar.setVisibility(View.GONE);
-        swipeRefreshLayout.setRefreshing(false);
+
     }
 
 

@@ -16,39 +16,57 @@ import io.realm.annotations.Required;
 public class RealmUser extends RealmObject{
 
 
-    private String userToken = null;
-    private String displayName = null;
+    private String displayName;
+    @Required
+    private String email;
     private String photoUrl = "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1378871_10151890982237420_1347727989_n.jpg?oh=f8522e0ea7aee1411b67ee45988d5456&oe=5A6FA4C9";
 
     @Required
-    private String email = null;
-
-    @Required
     @PrimaryKey
-    private String uid = null;
+    private String uid;
+
+    private int wins = 0;
+    private int losses = 0;
+
+    //    private List<Game> games = new ArrayList<>();
+    private String userToken;
+    //    private List<PushNotification> notifications = new ArrayList<>();
+//    private List<Message> messages = new ArrayList<>();
+    private String hasGames = "No";
 
 
     public RealmUser() {
 
     }
 
-    public static RealmUser create(String uid, String email){
-        RealmUser user = new RealmUser();
-        user.uid = uid;
-        user.email = email;
-        return user;
-    }
-
     public RealmUser(String uid, String email){
         this.uid = uid;
         this.email = email;
         this.displayName = email;
+
     }
 
     public RealmUser(String uid, String email, String displayName) {
         this.uid = uid;
         this.email = email;
         this.displayName = displayName;
+
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLosses() {
+        return losses;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
     }
 
     public String getUid(){
@@ -67,7 +85,7 @@ public class RealmUser extends RealmObject{
         this.uid = uid;
     }
 
-    public   void setEmail(String email){
+    public void setEmail(String email){
         this.email = email;
     }
 
@@ -81,5 +99,13 @@ public class RealmUser extends RealmObject{
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 }

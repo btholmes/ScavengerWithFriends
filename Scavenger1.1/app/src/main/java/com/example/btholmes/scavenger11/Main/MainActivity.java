@@ -2,14 +2,10 @@ package com.example.btholmes.scavenger11.main;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.btholmes.scavenger11.application.DrawerActivity;
-import com.example.btholmes.scavenger11.tools.Utility;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import io.realm.Realm;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class MainActivity extends DrawerActivity {
 
@@ -22,45 +18,63 @@ public class MainActivity extends DrawerActivity {
 
     private String imageURL;
 
-    Utility utility = Utility.getInstance(this);
-    Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        checkUserNull();
+        if(user == null) return;
 
-        //SO user doesn't have to log in everytime
-        firebaseAuthListner = new FirebaseAuth.AuthStateListener(){
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user == null){
-                    goToLogin();
-                }
+        /**
+         * Setting badge count
+         */
+//        setBadgeCount(getApplicationContext(), 2);
+
+        int count = getBadgeCount();
+        setBadgeCount(this, count);
+        checkFirebaseToken();
+        Log.e("MainActivity : " , "Token is " + FirebaseInstanceId.getInstance().getToken());
+
+
+    }
+
+
+
+
+    private void checkFirebaseToken(){
+        String token = getSharedPreferences("token", MODE_PRIVATE).getString("token", "false");
+        if(token.equals("false")){
+            try{
+                FirebaseInstanceId.getInstance().deleteInstanceId();
+                getSharedPreferences("token", MODE_PRIVATE).edit().putString("token", "").apply();
+                FirebaseInstanceId.getInstance().getToken();
+            }catch (Exception e){
+                Log.e("fBaseToken", "Exception while trying to delete instance of FirebaseInstanceId");
+                e.printStackTrace();
             }
-        };
-        auth.addAuthStateListener(firebaseAuthListner);
-
+        }else{
+            mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("userToken").setValue(token);
+        }
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        vpPref = getPreferences(MODE_PRIVATE);
+        vpPref = getSharedPreferences("viewPagerPage", MODE_PRIVATE);
         viewPagerPage = vpPref.getInt("viewPagerPage", 0);
 
         viewPager.setCurrentItem(viewPagerPage);
-        auth.addAuthStateListener(firebaseAuthListner);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         int index = viewPager.getCurrentItem();
-        getPreferences(MODE_PRIVATE).edit().putInt("viewPagerPage", index).commit();
+        getSharedPreferences("viewPagerPage", MODE_PRIVATE).edit().putInt("viewPagerPage", index).commit();
     }
+
 
 
 }
