@@ -1,6 +1,7 @@
 package com.example.btholmes.scavenger11.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -20,7 +21,8 @@ public class User {
     private int wins = 0;
     private int losses = 0;
 
-    private List<Game> games = new ArrayList<>();
+//    private List<HashMap<String, Game>> games = new ArrayList<>();
+    private HashMap<String, Game> games = new HashMap<>();
     private String userToken = null;
     private List<PushNotification> notifications = new ArrayList<>();
     private List<Message> messages = new ArrayList<>();
@@ -100,20 +102,35 @@ public class User {
     public void setUserToken(String userToken) {
         this.userToken = userToken;
     }
+//
+//    public List<HashMap<String, Game>> getGames() {
+//        if(games.size() >=1){
+//            hasGames = "yes";
+//        }
+//        return games;
+//    }
 
-    public List<Game> getGames() {
-        if(games.size() >=1){
+//    public void setGames(List<Game> games) {
+//        if(games!= null && games.size() >= 1){
+//            this.games = games;
+//            hasGames = "no";
+//        }
+
+//    }
+
+
+    public HashMap<String, Game> getGames() {
+        if(games.size() >= 1){
             hasGames = "yes";
         }
         return games;
     }
 
-    public void setGames(List<Game> games) {
+    public void setGames(HashMap<String, Game> games) {
         if(games!= null && games.size() >= 1){
             this.games = games;
             hasGames = "no";
         }
-
     }
 
     public List<PushNotification> getNotifications() {
@@ -139,4 +156,6 @@ public class User {
     public void setHasGames(String hasGames) {
         this.hasGames = hasGames;
     }
+
+
 }

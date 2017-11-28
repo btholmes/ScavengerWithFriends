@@ -20,7 +20,6 @@ package com.example.btholmes.scavenger11.pushNotifications;
  *
  */
 
-import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -32,9 +31,9 @@ import com.example.btholmes.scavenger11.main.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.List;
-
-
+/**
+ * This class will run if the app is currently open
+ */
 public class FireMsgService extends FirebaseMessagingService {
 
     @Override
@@ -51,7 +50,7 @@ public class FireMsgService extends FirebaseMessagingService {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_brief)
-                .setContentTitle("New Message")
+                .setContentTitle("Created in FireMsgService")
                 .setContentText(remoteMessage.getNotification().getBody())
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
@@ -60,25 +59,6 @@ public class FireMsgService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(1, notificationBuilder.build());
-    }
-
-    public boolean checkInForeground(){
-        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> services = activityManager
-                .getRunningTasks(Integer.MAX_VALUE);
-        boolean isActivityFound = false;
-
-        if (services.get(0).topActivity.getPackageName().toString()
-                .equalsIgnoreCase(getApplicationContext().getPackageName().toString())) {
-            isActivityFound = true;
-        }
-
-        if (isActivityFound) {
-            return false;
-        }
-            // write your code to build a notification.
-            // return the notification you built here
-        return true;
     }
 
 }

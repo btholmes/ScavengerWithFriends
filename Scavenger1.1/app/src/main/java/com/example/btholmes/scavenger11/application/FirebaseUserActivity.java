@@ -10,7 +10,6 @@ import android.util.Log;
 import com.example.btholmes.scavenger11.login.LoginActivity;
 import com.example.btholmes.scavenger11.model.RealmUser;
 import com.example.btholmes.scavenger11.model.User;
-import com.example.btholmes.scavenger11.pushNotifications.NotificationListener;
 import com.example.btholmes.scavenger11.tools.Utility;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,7 +77,7 @@ public class FirebaseUserActivity extends AppCompatActivity {
             /**
              * Start Notification Service, it extends service and runs on the main thread
              */
-            startService(new Intent(FirebaseUserActivity.this, NotificationListener.class));
+//            startService(new Intent(FirebaseUserActivity.this, NotificationListener.class));
 
         }
     }

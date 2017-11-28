@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PageFragmentAdapter extends FragmentPagerAdapter {
+public class PageFragmentAdapter extends FragmentPagerAdapter  {
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mFragmentTitles = new ArrayList<>();
 
@@ -45,4 +45,6 @@ public class PageFragmentAdapter extends FragmentPagerAdapter {
     public String getTitle(int position){
         return mFragmentTitles.get(position);
     }
+
+
 }

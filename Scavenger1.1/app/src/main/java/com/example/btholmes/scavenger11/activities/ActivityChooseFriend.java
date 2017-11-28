@@ -206,8 +206,10 @@ public class ActivityChooseFriend extends ScavengerActivity{
                  * Doing below actually removes from firebase
                  */
 //                if(modelEmail == null || userEmail == null || modelEmail.equals(userEmail)){
-//                    DatabaseReference itemRef = getRef(position);
-//                    itemRef.setS
+////                    DatabaseReference itemRef = getRef(position);
+////                    itemRef.setS
+//
+//                    v.setVisibility(View.GONE);
 //                    return;
 //                }
                 LinearLayout parent = (LinearLayout) v.findViewById(R.id.lyt_parent);
@@ -279,6 +281,8 @@ public class ActivityChooseFriend extends ScavengerActivity{
             @Override
             public void onClick(View view) {
                 createPushNotification(f);
+                Game newGame = createGame(f);
+                addGame(newGame, f);
                 onBackPressed();
             }
         });

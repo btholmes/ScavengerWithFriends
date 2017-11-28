@@ -86,6 +86,7 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
 
             holder.name.setText(p.getGameID());
             holder.image.setBackgroundColor(ContextCompat.getColor(ctx, R.color.ten));
+            holder.wordsLeft.setText(p.getWords().toString());
 
 
 //            Picasso.with(ctx).load(p.getFriend().getPhoto()).resize(80, 80).transform(new CircleTransform()).into(holder.image);

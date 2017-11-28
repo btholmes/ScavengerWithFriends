@@ -98,7 +98,7 @@
         </service>
 
 
-        <service android:name=".pushNotifications.NotificationListener"/>
+        <!--<service android:name=".pushNotifications.NotificationListener"/>-->
 
 
     </application>

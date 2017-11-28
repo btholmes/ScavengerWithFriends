@@ -94,13 +94,13 @@ public class Game {
         this.challengerDisplayName = challengerDisplayName;
     }
 
-//    public List<String> getWords() {
-//        return words;
-//    }
-//
-//    public void setWords(ArrayList<String> words) {
-//        this.words = words;
-//    }
+    public List<String> getWords() {
+        return words;
+    }
+
+    public void setWords(ArrayList<String> words) {
+        this.words = words;
+    }
 
     public boolean isOpponentHasAccepted() {return opponentHasAccepted; }
 

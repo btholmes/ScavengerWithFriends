@@ -23,6 +23,18 @@ public class MainActivity extends DrawerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /**
+         * Checks if this intent was opened from a notification
+         */
+        String jobID = this.getIntent().getExtras().getString("jobID", "");
+        /**
+         * Sets badge count accordingly
+         */
+        int badgeCount = getBadgeCount();
+        if(jobID.equals("notification")){
+            setBadgeCount(this, badgeCount -1);
+        }
+
 //        checkUserNull();
         if(user == null) return;
 

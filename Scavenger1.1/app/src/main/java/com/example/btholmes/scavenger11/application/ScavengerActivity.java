@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 
 import com.example.btholmes.scavenger11.main.MainActivity;
 import com.example.btholmes.scavenger11.model.Analytics;
+import com.example.btholmes.scavenger11.model.Game;
 import com.example.btholmes.scavenger11.model.PushNotification;
 import com.example.btholmes.scavenger11.model.User;
 import com.example.btholmes.scavenger11.tools.Utility;
@@ -21,7 +22,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import io.realm.Realm;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -44,6 +48,11 @@ public class ScavengerActivity extends FirebaseUserActivity implements GoogleApi
     protected int badgeCount = 0;
     protected SharedPreferences preferences;
     protected final String SHARED_PREFERENCES_NOTIFICATIONS_FILE = "Notifications";
+    protected final String NEW_GAME_NOTIFICATION = "NewGameNotif";
+    protected final String NEW_CHAT_NOTIFICATION = "NewChatNotif";
+    protected final String NEW_NOTIFICATION_NOTIFICATION= "NewNotifNotif";
+    protected final String BADGE_COUNT = "badgeCount";
+
     protected Realm realm;
     protected Utility utility;
 
@@ -58,7 +67,7 @@ public class ScavengerActivity extends FirebaseUserActivity implements GoogleApi
 //        realm = Realm.getDefaultInstance();
 
         preferences = getSharedPreferences(SHARED_PREFERENCES_NOTIFICATIONS_FILE, MODE_PRIVATE);
-        badgeCount = preferences.getInt("badgeCount", 0);
+        badgeCount = preferences.getInt(BADGE_COUNT, 0);
 
 
 
@@ -218,8 +227,9 @@ public class ScavengerActivity extends FirebaseUserActivity implements GoogleApi
         finish();
     }
 
+
     protected int getBadgeCount(){
-        return getSharedPreferences(SHARED_PREFERENCES_NOTIFICATIONS_FILE, MODE_PRIVATE).getInt("badgeCount", 0);
+        return getSharedPreferences(SHARED_PREFERENCES_NOTIFICATIONS_FILE, MODE_PRIVATE).getInt(BADGE_COUNT, 0);
     }
 
     protected void setBadgeCountStartUp(Context context, int count){
@@ -227,7 +237,7 @@ public class ScavengerActivity extends FirebaseUserActivity implements GoogleApi
     }
 
     protected void setBadgeCountPreferences(int count){
-        preferences.edit().putInt("badgeCount", count).apply();
+        preferences.edit().putInt(BADGE_COUNT, count).apply();
     }
 
     protected void removeBadgeCount(Context context){
@@ -242,6 +252,28 @@ public class ScavengerActivity extends FirebaseUserActivity implements GoogleApi
         setBadgeCountPreferences(0);
 //        ShortcutBadger.with(getApplicationContext()).count(badgeCount); //for 1.1.3
 
+    }
+
+    protected int getGameNotifications(){
+        return getSharedPreferences(SHARED_PREFERENCES_NOTIFICATIONS_FILE, MODE_PRIVATE).getInt(NEW_GAME_NOTIFICATION, 0);
+    }
+    protected int getMessagesNotifications(){
+        return getSharedPreferences(SHARED_PREFERENCES_NOTIFICATIONS_FILE, MODE_PRIVATE).getInt(NEW_CHAT_NOTIFICATION, 0);
+    }
+    protected int getNotificationNotifications(){
+        return getSharedPreferences(SHARED_PREFERENCES_NOTIFICATIONS_FILE, MODE_PRIVATE).getInt(NEW_NOTIFICATION_NOTIFICATION, 0);
+    }
+
+    protected void setGameNotifications(int count){
+        preferences.edit().putInt(NEW_GAME_NOTIFICATION, count).apply();
+    }
+
+    protected void setMessageNotifications(int count){
+        preferences.edit().putInt(NEW_CHAT_NOTIFICATION, count).apply();
+    }
+
+    protected void setNotificationNotifications(int count){
+        preferences.edit().putInt(NEW_NOTIFICATION_NOTIFICATION, count).apply();
     }
 
     protected void createPushNotification(User friend){
@@ -264,6 +296,24 @@ public class ScavengerActivity extends FirebaseUserActivity implements GoogleApi
 
         mFirebaseDatabaseReference.child("userList").child(friend.getUid()).child("notification").setValue(msg);
     }
+
+    /**
+     * This will return a random list of words
+     * @return
+     */
+    protected List<String> getWordList(){
+        return new ArrayList<String>(Arrays.asList("Lion", "Coffee", "Peace"));
+    }
+
+    protected Game createGame(User friend){
+        return new Game(user.getUid(), friend.getUid(), getWordList());
+    }
+
+    protected void addGame(Game game, User friend){
+        mFirebaseDatabaseReference.child("userList").child(friend.getUid()).child("games").child(game.getGameID()).setValue(game);
+        mFirebaseDatabaseReference.child("userList").child(user.getUid()).child("games").child(game.getGameID()).setValue(game);
+    }
+
 
 
 

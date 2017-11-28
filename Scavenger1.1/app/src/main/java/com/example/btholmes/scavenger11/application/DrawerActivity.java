@@ -17,12 +17,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -464,11 +468,116 @@ public class DrawerActivity extends ScavengerActivity {
     }
     private void setupTabIcons() {
 
-        tabLayout.getTabAt(0).setIcon(imageResId[0]);
-        tabLayout.getTabAt(1).setIcon(imageResId[2]);
-        tabLayout.getTabAt(2).setIcon(imageResId[1]);
-        tabLayout.getTabAt(3).setIcon(imageResId[3]);
-        tabLayout.getTabAt(4).setIcon(imageResId[4]);
+        FrameLayout.LayoutParams frameParams;
+        DisplayMetrics dm;
+/**
+ * Tab One
+ */
+        FrameLayout tabOne = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+        dm = tabOne.getResources().getDisplayMetrics();
+
+
+        TextView text = (TextView) tabOne.findViewById(R.id.text1);
+        text.setText("100");
+
+
+        ImageView icon = (ImageView) tabOne.findViewById(R.id.icon);
+
+
+
+
+        icon.setBackgroundResource(imageResId[0]);
+        tabLayout.getTabAt(0).setCustomView(tabOne);
+
+/**
+ * Tab Two
+ */
+        FrameLayout tabTwo = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+        dm = tabTwo.getResources().getDisplayMetrics();
+
+
+        text = (TextView) tabTwo.findViewById(R.id.text1);
+        text.setText("2");
+
+        icon = (ImageView) tabTwo.findViewById(R.id.icon);
+
+
+
+
+        icon.setBackgroundResource(imageResId[1]);
+        tabLayout.getTabAt(1).setCustomView(tabTwo);
+
+/**
+ * Tab Three
+ */
+        FrameLayout tabThree = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+        dm = tabThree.getResources().getDisplayMetrics();
+
+        text = (TextView) tabThree.findViewById(R.id.text1);
+        text.setVisibility(View.GONE);
+
+        icon = (ImageView) tabThree.findViewById(R.id.icon);
+        icon.setBackgroundResource(imageResId[2]);
+
+        /**
+         * Set Image View layout Parmas
+         */
+        frameParams = (FrameLayout.LayoutParams) icon.getLayoutParams();
+        frameParams.setMargins(convertDpToPx(0,dm),convertDpToPx(4, dm),convertDpToPx(0,dm),convertDpToPx(0,dm));
+        icon.setLayoutParams(frameParams);
+        icon.requestLayout();
+
+
+        tabLayout.getTabAt(2).setCustomView(tabThree);
+
+/**
+ * Tab Four
+ */
+        FrameLayout tabFour = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+        dm = tabFour.getResources().getDisplayMetrics();
+
+
+        text = (TextView) tabFour.findViewById(R.id.text1);
+        text.setText("1");
+
+
+        icon = (ImageView) tabFour.findViewById(R.id.icon);
+
+
+        icon.setBackgroundResource(imageResId[3]);
+        tabLayout.getTabAt(3).setCustomView(tabFour);
+
+
+/**
+ * Tab Five
+ */
+        FrameLayout tabFive = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+        dm = tabFive.getResources().getDisplayMetrics();
+
+        text = (TextView) tabFive.findViewById(R.id.text1);
+        text.setVisibility(View.GONE);
+//        text.setText("10");
+
+
+        icon = (ImageView) tabFive.findViewById(R.id.icon);
+        /**
+         * Set Image View layout Parmas
+         */
+        frameParams = (FrameLayout.LayoutParams) icon.getLayoutParams();
+        frameParams.setMargins(convertDpToPx(0,dm),convertDpToPx(4, dm),convertDpToPx(0,dm),convertDpToPx(0,dm));
+        icon.setLayoutParams(frameParams);
+        icon.requestLayout();
+
+
+        icon.setBackgroundResource(imageResId[4]);
+        tabLayout.getTabAt(4).setCustomView(tabFive);
+
+
+    }
+
+    private int convertDpToPx(int dp, DisplayMetrics displayMetrics) {
+        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics);
+        return Math.round(pixels);
     }
 
     private void setupTabClick() {

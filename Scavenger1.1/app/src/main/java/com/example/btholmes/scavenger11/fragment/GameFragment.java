@@ -112,7 +112,7 @@ public class GameFragment extends ScavengerFragment {
 //                        .transform(new CircleTransform())
 //                        .into(backgroundImage);
                 name.setText(model.getChallengerWordsLeft().toString());
-
+                wordsLeft.setText(model.getWords().toString());
 
             }
 
